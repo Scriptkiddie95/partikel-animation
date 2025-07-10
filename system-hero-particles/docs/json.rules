@@ -1,0 +1,27 @@
+// 📜 Codex-Regeln – json.rules
+
+{
+  "agents": [
+    {
+      "type": "agent",
+      "trigger": ["load", "scroll"],
+      "targets": ["h1", "h2", "p", ".cta"],
+      "strategy": "particles-to-text",
+      "source": "textflow.prompt.md",
+      "equation": "mother_wave",
+      "parameters": {
+        "A": 1.0,
+        "k": 0.1,
+        "omega": 1.5,
+        "alpha": 0.03,
+        "gamma": 3.0,
+        "epsilon": 0.1,
+        "x0": 0,
+        "y0": 0
+      },
+      "frameRate": 60,
+      "duration": 800,
+      "ease": "easeOutCubic"
+    }
+  ]
+}

@@ -1,9 +1,8 @@
 import useMeasure from 'react-use-measure'
-import type { ChangeEvent, FC, FormEvent, InputHTMLAttributes } from 'react'
 import { useCallback, useState } from 'react'
+import type { ChangeEvent, FC, FormEvent, InputHTMLAttributes } from 'react'
 import DissipateTextEffect from './DissipateTextEffect'
 import { Status, type StatusType } from './Status'
-
 
 type EmailInputProps = {
   onSubmit: (email: string) => void
@@ -11,88 +10,91 @@ type EmailInputProps = {
 
 const EmailInput: FC<EmailInputProps> = ({ onSubmit, ...props }) => {
   const [formRef, dimensions] = useMeasure()
-  const [value, setValue] = useState<string>('')
+  const [value, setValue] = useState('')
+  const [status, setStatus] = useState<StatusType>(Status.Idle)
 
-const [status, setStatus] = useState<StatusType>(Status.Idle)
+  const disabledStates: StatusType[] = [Status.Loading, Status.Animate]
 
-  const onEmailChange = useCallback(
-    (event: ChangeEvent<HTMLInputElement>) => {
-      setStatus(Status.Idle)
-      setValue(event.target.value)
-    },
-    []
-  )
+  const onEmailChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
+    setStatus(Status.Idle)
+    setValue(event.target.value)
+  }, [])
 
-  const submitForm = useCallback(
-    (event: FormEvent<HTMLFormElement>) => {
-      event.preventDefault()
-      event.stopPropagation()
+  const submitForm = useCallback((event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
 
-      if (value.length === 0) {
-        setStatus(Status.Error)
-        return
-      }
+    if (!value || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+      setStatus(Status.Error)
+      return
+    }
 
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
-        setStatus(Status.Error)
-        return
-      }
+    setStatus(Status.Loading)
 
-      setStatus(Status.Loading)
-
-      try {
-        onSubmit(value)
-        setStatus(Status.Animate)
-      } catch {
-        setStatus(Status.Error)
-      }
-    },
-    [value, onSubmit]
-  )
+    try {
+      onSubmit(value)
+      setStatus(Status.Animate)
+    } catch {
+      setStatus(Status.Error)
+    }
+  }, [value, onSubmit])
 
   return (
-    <form
-      ref={formRef}
-      onSubmit={submitForm}
-      data-loading={status === Status.Loading}
-      className="pb-3 relative w-full mx-auto border-[#ffffff48] border-b-2 max-w-[80%]"
-    >
-      <div className="relative group">
-        <input
-          type="email"
-          value={value}
-          onChange={onEmailChange}
-          placeholder="sup@miguel.build"
-disabled={([Status.Loading, Status.Animate] as StatusType[]).includes(status)}
-          className={`w-full focus-visible:shadow-none transition-[color] ease duration-300 selection:bg-white selection:text-orange pr-20 text-2xl outline-0 font-medium ${status == Status.Animate ? 'text-transparent' : 'text-white'}`}
-          {...props}
-        />
-        <div className="absolute right-0 translate-y-[-50%] top-[50%] grid-stack">
-          <button
-            type="submit"
-            className={`uppercase text-[#ffffff95] text-lg transition duration-500 ease-in-out opacity-0 blur-xs scale-85 ${status == Status.Idle ? 'group-focus-within:opacity-50 group-focus-within:blur-none group-focus-within:scale-100' : ''}`}
-          >
-            [Enter]
-          </button>
-        </div>
-        {status === Status.Animate && (
-          <DissipateTextEffect
-            size={24}
-            value={value}
-            color="#FFFFFF"
-            height={2 * dimensions.height}
-            width={2 * dimensions.width - 136}
-            onDone={() => {
-              setStatus(Status.Success)
-              setValue('')
+    <form ref={formRef} onSubmit={submitForm} style={{ position: 'relative', maxWidth: 600 }}>
+      <input
+        type="email"
+        value={value}
+        onChange={onEmailChange}
+        placeholder="sup@miguel.build"
+        disabled={disabledStates.includes(status)}
+        style={{
+          width: '100%',
+          fontSize: 48,
+          fontFamily: 'Orbitron, Inter, sans-serif',
+          padding: '12px 16px',
+          background: '#222',
+          color: status === Status.Animate ? 'transparent' : '#fff',
+          border: 'none',
+          borderRadius: 6,
+          outline: 'none',
+          boxSizing: 'border-box',
+        }}
+        {...props}
+      />
 
-              setTimeout(() => {
-                setStatus(Status.Idle)
-              }, 1000)
-            }}
-          />
-        )}
-      </div>
+      <button
+        type="submit"
+        disabled={disabledStates.includes(status)}
+        style={{
+          position: 'absolute',
+          top: '50%',
+          right: 12,
+          transform: 'translateY(-50%)',
+          background: 'transparent',
+          border: 'none',
+          color: '#999',
+          fontSize: 18,
+          cursor: disabledStates.includes(status) ? 'default' : 'pointer',
+          opacity: disabledStates.includes(status) ? 0.3 : 1,
+          transition: 'opacity 0.3s',
+        }}
+      >
+        [Enter]
+      </button>
+
+      {status === Status.Animate && (
+        <DissipateTextEffect
+          size={48}
+          value={value}
+          color="#FFFFFF"
+          height={dimensions.height}
+          width={dimensions.width}
+          onDone={() => {
+            setStatus(Status.Success)
+            setValue('')
+            setTimeout(() => setStatus(Status.Idle), 1000)
+          }}
+        />
+      )}
     </form>
   )
 }

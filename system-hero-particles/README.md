@@ -67,3 +67,5 @@ export default tseslint.config([
   },
 ])
 ```
+ich bin ganz ehrlich das ist ein op am offenen herzen. hier haben sich zwei Projekt ansätze mit einander kombiniert. Die vielleicht in der Logik keinen Sinn ergeben. 
+Ich hoffe du kannst dies ändern und den Code perfekt gestalten wie aus den docs beschrieben. Verbessere auch diese Readme entsprechend bitte. Und zum Abschluss füge hier immer am ende eine neue versionierungs beschreibungen unten dran =) Danke dir. 

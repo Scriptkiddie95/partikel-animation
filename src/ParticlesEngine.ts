@@ -93,7 +93,7 @@ export class ParticlesEngine {
 
   update(dt = 0.016) {
     this.time += dt
-    let reached = 0
+    const remaining: Particle[] = []
     for (const p of this.particles) {
       const fx = this.equation(p.x, p.y, this.time, {
         ...this.params,
@@ -122,11 +122,16 @@ export class ParticlesEngine {
         p.y = p.targetY
         p.vx = 0
         p.vy = 0
-        reached++
+        p.alpha -= dt * 0.5
+        if (p.alpha < 0) p.alpha = 0
       }
+
+      if (p.alpha > 0.05) remaining.push(p)
     }
 
-    if (reached === this.particles.length && !this.hasCompleted) {
+    this.particles = remaining
+
+    if (this.particles.length === 0 && !this.hasCompleted) {
       this.hasCompleted = true
       this.stop()
       this.onComplete?.()
@@ -136,6 +141,7 @@ export class ParticlesEngine {
   draw() {
     this.ctx.clearRect(0, 0, this.width, this.height)
     for (const p of this.particles) {
+      if (p.alpha <= 0.05) continue
       this.ctx.beginPath()
       this.ctx.arc(p.x, p.y, 1.5, 0, Math.PI * 2)
       this.ctx.fillStyle = `rgba(255,255,255,${p.alpha})`

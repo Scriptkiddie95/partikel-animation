@@ -1,4 +1,3 @@
-# System Hero Particles
 
 This project contains a React-based prototype for the **System Hero** landing page.
 Particles gather from the surrounding space and assemble into text using an inverted wave equation.

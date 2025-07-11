@@ -1,13 +1,31 @@
 import ParticleText from './ParticleText'
 import EmailInput from './EmailInput'
 import AssembleTextEffect from './AssembleTextEffect'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 export default function App() {
   const [startHero, setStartHero] = useState(false)
+  const heroRef = useRef<HTMLElement | null>(null)
 
   useEffect(() => {
-    setStartHero(true)
+    const el = heroRef.current
+    if (!el) return
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setStartHero(true)
+          observer.disconnect()
+        }
+      },
+      { threshold: 0.1 }
+    )
+
+    observer.observe(el)
+
+    return () => {
+      observer.disconnect()
+    }
   }, [])
 
   return (
@@ -22,6 +40,7 @@ export default function App() {
     >
       {/* Hero Section mit AssembleTextEffect */}
       <section
+        ref={heroRef}
         style={{
           height: '100vh',
           display: 'flex',

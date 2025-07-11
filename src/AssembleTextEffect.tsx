@@ -53,14 +53,11 @@ const AssembleTextEffect: React.FC<AssembleTextEffectProps> = ({ text, fontSize 
 
     const data = offCtx.getImageData(0, 0, offCanvas.width, offCanvas.height).data
     const targets: { x: number; y: number }[] = []
-    const offWidth = Math.floor(offCanvas.width / dpr)
-    const offHeight = Math.floor(offCanvas.height / dpr)
-    for (let y = 0; y < offHeight; y += 2) {
-      for (let x = 0; x < offWidth; x += 2) {
-        const iy = Math.floor(y * dpr)
-        const ix = Math.floor(x * dpr)
-        const idx = (iy * offCanvas.width + ix) * 4
-        if (data[idx + 3] > 128) targets.push({ x, y })
+    const step = Math.max(1, Math.round(dpr))
+    for (let y = 0; y < offCanvas.height; y += step) {
+      for (let x = 0; x < offCanvas.width; x += step) {
+        const idx = (y * offCanvas.width + x) * 4
+        if (data[idx + 3] > 128) targets.push({ x: x / dpr, y: y / dpr })
       }
     }
 

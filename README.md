@@ -28,3 +28,7 @@ npm run dev
 ```
 
 After the server starts, open the provided URL in your browser. The hero text animation begins automatically as soon as the page loads.
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).

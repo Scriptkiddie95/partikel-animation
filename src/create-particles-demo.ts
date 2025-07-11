@@ -1,4 +1,4 @@
-// @ts-expect-error -- demo script, Node types not included
+
 import { writeFileSync } from 'node:fs'
 
 const files = {

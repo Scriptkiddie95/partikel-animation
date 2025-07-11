@@ -18,7 +18,7 @@ const AssembleTextEffect: React.FC<AssembleTextEffectProps> = ({ text, fontSize 
     let cancelled = false
 
     const start = async () => {
-      await document.fonts?.ready
+      await (document as any).fonts?.ready
       if (cancelled) return
 
       const canvas = canvasRef.current

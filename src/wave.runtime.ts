@@ -52,7 +52,7 @@ export const waveFunctions = {
     y: number,
     t: number,
     params: WaveParams,
-  ): { vx: number; vy: number } => {
+  ): number => {
     const {
       A = 1.0,
       k = 0.1,
@@ -65,12 +65,10 @@ export const waveFunctions = {
     } = params
     const dx = x - x0
     const dy = y - y0
-    const r = Math.hypot(dx, dy) || 1
+    const r = Math.hypot(dx, dy)
     const wave = A * Math.sin(k * r - omega * t)
     const gravity = gamma / (r ** 2 + epsilon)
-    const magnitude = (wave + gravity) * Math.exp(-alpha * t)
-    const angle = Math.atan2(dy, dx)
-    return { vx: -Math.cos(angle) * magnitude, vy: -Math.sin(angle) * magnitude }
+    return (wave + gravity) * Math.exp(-alpha * t)
   }
 }
 export const resolveWave = (

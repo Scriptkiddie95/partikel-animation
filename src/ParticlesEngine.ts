@@ -24,8 +24,11 @@ export class ParticlesEngine {
   private width: number
   private height: number
   private spawnRadius: number
+  private onComplete?: () => void
   private lastTime: number | null = null
   private rafId = 0
+  private running = false
+  private hasCompleted = false
 
   constructor(
     ctx: CanvasRenderingContext2D,
@@ -35,7 +38,8 @@ export class ParticlesEngine {
       equationId?: string
       params?: Record<string, number>
       spawnRadius?: number
-    } = {}
+    } = {},
+    onComplete?: () => void
   ) {
     this.ctx = ctx
     this.width = width
@@ -43,6 +47,7 @@ export class ParticlesEngine {
     this.equation = resolveWave(config.equationId ?? 'mother_wave')
     this.params = config.params ?? {}
     this.spawnRadius = config.spawnRadius ?? 50
+    this.onComplete = onComplete
   }
 
   init(targets: { x: number; y: number }[]) {
@@ -88,6 +93,7 @@ export class ParticlesEngine {
 
   update(dt = 0.016) {
     this.time += dt
+    let reached = 0
     for (const p of this.particles) {
       const fx = this.equation(p.x, p.y, this.time, {
         ...this.params,
@@ -116,7 +122,14 @@ export class ParticlesEngine {
         p.y = p.targetY
         p.vx = 0
         p.vy = 0
+        reached++
       }
+    }
+
+    if (reached === this.particles.length && !this.hasCompleted) {
+      this.hasCompleted = true
+      this.stop()
+      this.onComplete?.()
     }
   }
 
@@ -130,26 +143,23 @@ export class ParticlesEngine {
     }
   }
 
-  run(onComplete?: () => void) {
+  run() {
+    this.running = true
+    this.hasCompleted = false
     this.lastTime = null
     const loop = (timestamp: number) => {
       const dt = this.lastTime === null ? 0.016 : (timestamp - this.lastTime) / 1000
       this.lastTime = timestamp
       this.update(dt)
       this.draw()
-      const done = this.particles.every(
-        p => p.x === p.targetX && p.y === p.targetY
-      )
-      if (done) {
-        onComplete?.()
-        return
-      }
+      if (!this.running) return
       this.rafId = requestAnimationFrame(loop)
     }
     this.rafId = requestAnimationFrame(loop)
   }
 
   stop() {
+    this.running = false
     cancelAnimationFrame(this.rafId)
     this.lastTime = null
   }

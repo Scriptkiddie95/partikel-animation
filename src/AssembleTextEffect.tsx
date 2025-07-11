@@ -64,11 +64,17 @@ const AssembleTextEffect: React.FC<AssembleTextEffectProps> = ({ text, fontSize 
       }
     }
 
-    const engine = new ParticlesEngine(ctx, width, height, {
-      equationId: 'mother_wave',
-    })
+    const engine = new ParticlesEngine(
+      ctx,
+      width,
+      height,
+      {
+        equationId: 'mother_wave',
+      },
+      () => setShowText(true)
+    )
     engine.init(targets)
-    engine.run(() => setShowText(true))
+    engine.run()
     engineRef.current = engine
 
     }
@@ -86,15 +92,17 @@ const AssembleTextEffect: React.FC<AssembleTextEffectProps> = ({ text, fontSize 
       ref={containerRef}
       style={{ position: 'relative', width: '100%', height: '100%' }}
     >
-      <canvas
-        ref={canvasRef}
-        style={{
-          position: 'absolute',
-          inset: 0,
-          width: '100%',
-          height: '100%',
-        }}
-      />
+      {!showText && (
+        <canvas
+          ref={canvasRef}
+          style={{
+            position: 'absolute',
+            inset: 0,
+            width: '100%',
+            height: '100%',
+          }}
+        />
+      )}
       <span
         style={{
           position: 'absolute',

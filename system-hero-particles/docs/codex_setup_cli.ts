@@ -1,4 +1,4 @@
-// 🛠️ codex.setup.cli.ts – CLI-Skript zur automatischen Initialisierung des Codex Partikelprojekts
+
 
 import fs from 'fs'
 import path from 'path'

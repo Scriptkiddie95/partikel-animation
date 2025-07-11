@@ -157,8 +157,8 @@ export class ParticlesEngine {
       const dt = this.lastTime === null ? 0.016 : (timestamp - this.lastTime) / 1000
       this.lastTime = timestamp
       this.update(dt)
-      this.draw()
       if (!this.running) return
+      this.draw()
       this.rafId = requestAnimationFrame(loop)
     }
     this.rafId = requestAnimationFrame(loop)
@@ -167,6 +167,7 @@ export class ParticlesEngine {
   stop() {
     this.running = false
     cancelAnimationFrame(this.rafId)
+    this.rafId = 0
     this.lastTime = null
   }
 }

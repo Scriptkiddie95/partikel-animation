@@ -83,7 +83,10 @@ const AssembleTextEffect: React.FC<AssembleTextEffectProps> = ({ text, fontSize 
 
     return () => {
       cancelled = true
-      engineRef.current?.stop()
+      if (engineRef.current) {
+        engineRef.current.stop()
+        engineRef.current = null
+      }
     }
   }, [text, fontSize, color, bounds.width, bounds.height])
 

@@ -40,16 +40,16 @@ const ParticleText: React.FC<Props> = ({
     const dpr = window.devicePixelRatio || 1
 
     // Setze explizit HTML-Attribute, nicht nur CSS!
-    canvas.width = width * dpr
-    canvas.height = height * dpr
+    canvas.width = Math.round(width * dpr)
+    canvas.height = Math.round(height * dpr)
     canvas.style.width = `${width}px`
     canvas.style.height = `${height}px`
     ctx.scale(dpr, dpr)
 
     // Offscreen-Canvas für Texterkennung
     const offCanvas = document.createElement('canvas')
-    offCanvas.width = width * dpr
-    offCanvas.height = height * dpr
+    offCanvas.width = Math.round(width * dpr)
+    offCanvas.height = Math.round(height * dpr)
     const offCtx = offCanvas.getContext('2d')
     if (!offCtx) return
     offCtx.scale(dpr, dpr)
@@ -67,7 +67,9 @@ const ParticleText: React.FC<Props> = ({
     particles.current = []
     for (let y = 0; y < height; y += 3) {
       for (let x = 0; x < width; x += 3) {
-        const index = ((y * dpr) * offCanvas.width + (x * dpr)) * 4
+        const iy = Math.floor(y * dpr)
+        const ix = Math.floor(x * dpr)
+        const index = (iy * offCanvas.width + ix) * 4
         const alpha = imageData[index + 3]
         if (alpha > 128 && Math.random() < density) {
           particles.current.push({

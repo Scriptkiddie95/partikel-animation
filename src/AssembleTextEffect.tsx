@@ -29,16 +29,16 @@ const AssembleTextEffect: React.FC<AssembleTextEffectProps> = ({ text, fontSize 
     const dpr = window.devicePixelRatio || 1
     const width = bounds.width
     const height = bounds.height
-    canvas.width = width * dpr
-    canvas.height = height * dpr
+    canvas.width = Math.round(width * dpr)
+    canvas.height = Math.round(height * dpr)
     canvas.style.width = `${width}px`
     canvas.style.height = `${height}px`
     ctx.scale(dpr, dpr)
 
     // Offscreen canvas for text mask
     const offCanvas = document.createElement('canvas')
-    offCanvas.width = width * dpr
-    offCanvas.height = height * dpr
+    offCanvas.width = Math.round(width * dpr)
+    offCanvas.height = Math.round(height * dpr)
     const offCtx = offCanvas.getContext('2d')
     if (!offCtx) return
     offCtx.scale(dpr, dpr)
@@ -55,7 +55,9 @@ const AssembleTextEffect: React.FC<AssembleTextEffectProps> = ({ text, fontSize 
     const offHeight = Math.floor(offCanvas.height / dpr)
     for (let y = 0; y < offHeight; y += 2) {
       for (let x = 0; x < offWidth; x += 2) {
-        const idx = ((y * dpr) * offCanvas.width + (x * dpr)) * 4
+        const iy = Math.floor(y * dpr)
+        const ix = Math.floor(x * dpr)
+        const idx = (iy * offCanvas.width + ix) * 4
         if (data[idx + 3] > 128) targets.push({ x, y })
       }
     }

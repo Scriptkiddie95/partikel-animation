@@ -65,18 +65,17 @@ const ParticleText: React.FC<Props> = ({
 
     // Neue Partikel erzeugen
     particles.current = []
-    for (let y = 0; y < height; y += 3) {
-      for (let x = 0; x < width; x += 3) {
-        const iy = Math.floor(y * dpr)
-        const ix = Math.floor(x * dpr)
-        const index = (iy * offCanvas.width + ix) * 4
-        const alpha = imageData[index + 3]
+    const step = Math.max(1, Math.round(dpr))
+    for (let y = 0; y < offCanvas.height; y += step) {
+      for (let x = 0; x < offCanvas.width; x += step) {
+        const idx = (y * offCanvas.width + x) * 4
+        const alpha = imageData[idx + 3]
         if (alpha > 128 && Math.random() < density) {
           particles.current.push({
             x: Math.random() * width,
             y: Math.random() * height,
-            tx: x,
-            ty: y,
+            tx: x / dpr,
+            ty: y / dpr,
             vx: 0,
             vy: 0,
           })

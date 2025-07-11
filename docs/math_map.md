@@ -90,7 +90,7 @@ def mother_wave(x, y, t, A=1.0, k=0.1, omega=2.0, alpha=0.05, gamma=3.0, epsilon
     r = math.sqrt(dx**2 + dy**2)
     wave = A * math.sin(k * r - omega * t)
     gravity = gamma / (r**2 + epsilon)
-    return (wave + gravity) * math.exp(-alpha * t)
+    return (wave + gravity) * math.exp(-alpha * t)  # scalar amplitude
 ```
 
 ---

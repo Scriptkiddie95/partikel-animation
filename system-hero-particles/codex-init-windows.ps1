@@ -1,12 +1,23 @@
+# codex-init-windows.ps1 – Lokales Setup ohne Pfadfehler
 
-# Installiere npm-Abhängigkeiten
+$projectDir = "$PSScriptRoot"
+
+if (-Not (Test-Path "$projectDir\package.json")) {
+    Write-Error "❌ package.json nicht gefunden unter: $projectDir"
+    exit 1
+}
+
+Set-Location -Path $projectDir
+
 Write-Host "Installiere npm-Abhängigkeiten..."
 npm install
 
-# Installiere three.js
 Write-Host "Installiere three.js..."
 npm install three
 
-# Starte Vite-Dev-Server
-Write-Host "Starte Vite-Dev-Server..."
-npm run dev
+Write-Host "Starte Vite-Dev-Server und öffne Browser..."
+
+Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd `"$projectDir`"; npm run dev" | Out-Null
+
+Start-Sleep -Seconds 2
+Start-Process "http://localhost:5173/"

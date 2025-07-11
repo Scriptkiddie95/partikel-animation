@@ -18,14 +18,21 @@ const AssembleTextEffect: React.FC<AssembleTextEffectProps> = ({ text, fontSize 
     const ctx = canvas.getContext('2d')
     if (!ctx) return
 
+    const dpr = window.devicePixelRatio || 1
     const { width, height } = canvas
+    canvas.width = width * dpr
+    canvas.height = height * dpr
+    canvas.style.width = `${width}px`
+    canvas.style.height = `${height}px`
+    ctx.scale(dpr, dpr)
 
     // Offscreen canvas for text mask
     const offCanvas = document.createElement('canvas')
-    offCanvas.width = width
-    offCanvas.height = height
+    offCanvas.width = width * dpr
+    offCanvas.height = height * dpr
     const offCtx = offCanvas.getContext('2d')
     if (!offCtx) return
+    offCtx.scale(dpr, dpr)
 
     offCtx.fillStyle = color
     offCtx.font = `${fontSize}px Orbitron, sans-serif`
@@ -33,11 +40,11 @@ const AssembleTextEffect: React.FC<AssembleTextEffectProps> = ({ text, fontSize 
     offCtx.textBaseline = 'middle'
     offCtx.fillText(text, width / 2, height / 2)
 
-    const data = offCtx.getImageData(0, 0, width, height).data
+    const data = offCtx.getImageData(0, 0, offCanvas.width, offCanvas.height).data
     const targets: { x: number; y: number }[] = []
     for (let y = 0; y < height; y += 2) {
       for (let x = 0; x < width; x += 2) {
-        const idx = (y * width + x) * 4
+        const idx = ((y * dpr) * offCanvas.width + (x * dpr)) * 4
         if (data[idx + 3] > 128) targets.push({ x, y })
       }
     }

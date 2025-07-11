@@ -36,16 +36,23 @@ const ParticleText: React.FC<Props> = ({
     const ctx = canvas.getContext('2d')
     if (!ctx) return
 
+    // Device Pixel Ratio berücksichtigen
+    const dpr = window.devicePixelRatio || 1
+
     // Setze explizit HTML-Attribute, nicht nur CSS!
-    canvas.width = width
-    canvas.height = height
+    canvas.width = width * dpr
+    canvas.height = height * dpr
+    canvas.style.width = `${width}px`
+    canvas.style.height = `${height}px`
+    ctx.scale(dpr, dpr)
 
     // Offscreen-Canvas für Texterkennung
     const offCanvas = document.createElement('canvas')
-    offCanvas.width = width
-    offCanvas.height = height
+    offCanvas.width = width * dpr
+    offCanvas.height = height * dpr
     const offCtx = offCanvas.getContext('2d')
     if (!offCtx) return
+    offCtx.scale(dpr, dpr)
 
     // Fallback auf Arial, falls Orbitron nicht geladen wird!
     offCtx.fillStyle = '#000'
@@ -54,13 +61,13 @@ const ParticleText: React.FC<Props> = ({
     offCtx.textBaseline = 'middle'
     offCtx.fillText(text, width / 2, height / 2)
 
-    const imageData = offCtx.getImageData(0, 0, width, height).data
+    const imageData = offCtx.getImageData(0, 0, offCanvas.width, offCanvas.height).data
 
     // Neue Partikel erzeugen
     particles.current = []
     for (let y = 0; y < height; y += 3) {
       for (let x = 0; x < width; x += 3) {
-        const index = (y * width + x) * 4
+        const index = ((y * dpr) * offCanvas.width + (x * dpr)) * 4
         const alpha = imageData[index + 3]
         if (alpha > 128 && Math.random() < density) {
           particles.current.push({
@@ -138,10 +145,26 @@ const ParticleText: React.FC<Props> = ({
         width,
         height,
         margin: '100vh auto 0 auto',
+        position: 'relative',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center'
       }}>
+      <span
+        style={{
+          position: 'absolute',
+          inset: 0,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          background: 'transparent',
+          font: `bold ${fontSize}px Orbitron, Arial, sans-serif`,
+          color: '#fff',
+          userSelect: 'text',
+        }}
+      >
+        {text}
+      </span>
       <canvas
         ref={canvasRef}
         width={width}

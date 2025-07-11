@@ -10,7 +10,7 @@ Erzeuge eine sichtbare Animation, bei der **Partikel aus dem Raum** in definiert
 - Canvas-Text wird per `getImageData` in Zielkoordinaten umgewandelt
 - Bewegung basiert nicht auf Zufall, sondern **gerichtet zu Koordinaten**
 - Die Partikel starten aus zufälligen Punkten außerhalb oder innerhalb des Canvas
-- `particles.engine.ts` übernimmt Steuerung
+ - `ParticlesEngine.ts` übernimmt Steuerung (siehe `src/ParticlesEngine.ts`)
 
 ---
 

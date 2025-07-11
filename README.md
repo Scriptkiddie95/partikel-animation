@@ -8,7 +8,7 @@ Background on this idea and current challenges can be found in
 
 The planned modular structure includes:
 
-- `engine/` – particle algorithms (`particles.engine.ts`, `wave.runtime.ts`)
+- `engine/` – particle algorithms (`ParticlesEngine.ts`, `wave.runtime.ts`)
 - `canvas/` – React components running the engine
 - `agents/` – control files such as `canvas.agent.md`
 - `prompts/` – text prompts for generating particle positions

@@ -1,4 +1,4 @@
-// 🚀 particles.engine.ts – zentrale Steuerlogik für das Partikelsystem
+// 🚀 ParticlesEngine.ts – zentrale Steuerlogik für das Partikelsystem
 
 import { resolveWave, waveFunctions } from './wave.runtime'
 import { getTextTargets } from './textflow.prompt.md'

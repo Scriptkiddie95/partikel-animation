@@ -34,7 +34,7 @@ TASKS:
 INPUT:
 - `App.tsx` ist der Einstiegspunkt mit mehreren Textsektionen ("System Hero", "IT Services" usw.).
 - Über `ParticleText.tsx` oder das neue `AssembleTextEffect.tsx` muss der Partikeleffekt erfolgen.
-- Wichtige Dateien: `wave.runtime.ts`, `particles.engine.ts`, `scrollTrigger.ts`, `textMask.ts`
+ - Wichtige Dateien: `wave.runtime.ts`, `ParticlesEngine.ts`, `scrollTrigger.ts`, `textMask.ts` (siehe `src/ParticlesEngine.ts`)
 
 OUTPUT:
 - `AssembleTextEffect.tsx` als funktionsfähige Komponente

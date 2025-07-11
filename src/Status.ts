@@ -3,7 +3,6 @@ export const Status = {
   Idle: "Idle",
   Error: "Error",
   Loading: "Loading",
-  Animate: "Animate",
   Success: "Success"
 } as const;
 

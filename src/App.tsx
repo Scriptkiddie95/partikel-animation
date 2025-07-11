@@ -52,7 +52,9 @@ export default function App() {
         </h2>
         <EmailInput
           onSubmit={(email) => {
-            console.log('[E-Mail eingegeben]:', email)
+            if (import.meta.env.DEV) {
+              console.log('[E-Mail eingegeben]:', email)
+            }
           }}
         />
       </section>

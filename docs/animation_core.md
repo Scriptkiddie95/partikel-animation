@@ -36,7 +36,7 @@ Diese Technik wird **umgedreht**, sodass:
 
 1. [x] Neue Komponente `AssembleTextEffect.tsx` schreiben (Zielgerichtete Bewegung)
 2. [x] Alte Zerfallslogik vollständig entfernen (`status == Animate → Dissipate` raus)
-3. [ ] `ParticlesEngine.ts` anpassen, sodass `targetX, targetY` → Fixpunkt ist
+3. [x] `ParticlesEngine.ts` anpassen, sodass `targetX, targetY` → Fixpunkt ist
 4. [x] Wellenbasierte Bewegung (`mother_wave`) einbauen → aus `wave.runtime.ts`
 5. [x] Nur *sichtbare Textpixel* als Zielpunkte verwenden (wie in der Zerfallsversion)
 

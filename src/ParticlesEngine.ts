@@ -23,31 +23,66 @@ export class ParticlesEngine {
   private ctx: CanvasRenderingContext2D
   private width: number
   private height: number
+  private spawnRadius: number
   private rafId = 0
 
   constructor(
     ctx: CanvasRenderingContext2D,
     width: number,
     height: number,
-    config: { equationId?: string; params?: Record<string, number> } = {}
+    config: {
+      equationId?: string
+      params?: Record<string, number>
+      spawnRadius?: number
+    } = {}
   ) {
     this.ctx = ctx
     this.width = width
     this.height = height
     this.equation = resolveWave(config.equationId ?? 'mother_wave')
     this.params = config.params ?? {}
+    this.spawnRadius = config.spawnRadius ?? 50
   }
 
   init(targets: { x: number; y: number }[]) {
-    this.particles = targets.map(t => ({
-      x: Math.random() * this.width,
-      y: Math.random() * this.height,
-      vx: 0,
-      vy: 0,
-      targetX: t.x,
-      targetY: t.y,
-      alpha: 1,
-    }))
+    const r = this.spawnRadius
+    this.particles = targets.map(t => {
+      const side = Math.floor(Math.random() * 4)
+      let x = 0
+      let y = 0
+      switch (side) {
+        case 0:
+          // left
+          x = -r * (1 + Math.random())
+          y = Math.random() * this.height
+          break
+        case 1:
+          // right
+          x = this.width + r * (1 + Math.random())
+          y = Math.random() * this.height
+          break
+        case 2:
+          // top
+          x = Math.random() * this.width
+          y = -r * (1 + Math.random())
+          break
+        default:
+          // bottom
+          x = Math.random() * this.width
+          y = this.height + r * (1 + Math.random())
+          break
+      }
+
+      return {
+        x,
+        y,
+        vx: 0,
+        vy: 0,
+        targetX: t.x,
+        targetY: t.y,
+        alpha: 1,
+      }
+    })
   }
 
   update(dt: number) {

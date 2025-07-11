@@ -107,6 +107,15 @@ export class ParticlesEngine {
       p.vy *= 0.9
       p.x += p.vx
       p.y += p.vy
+
+      const dx = p.targetX - p.x
+      const dy = p.targetY - p.y
+      if (dx * dx + dy * dy < 1) {
+        p.x = p.targetX
+        p.y = p.targetY
+        p.vx = 0
+        p.vy = 0
+      }
     }
   }
 

@@ -85,7 +85,7 @@ export class ParticlesEngine {
     })
   }
 
-  update(dt: number) {
+  update(dt = 0.016) {
     this.time += dt
     for (const p of this.particles) {
       const fx = this.equation(p.x, p.y, this.time, {
@@ -121,8 +121,11 @@ export class ParticlesEngine {
   }
 
   run() {
-    const loop = () => {
-      this.update(0.016)
+    let lastTime: number | null = null
+    const loop = (timestamp: number) => {
+      const dt = lastTime === null ? 0.016 : (timestamp - lastTime) / 1000
+      lastTime = timestamp
+      this.update(dt)
       this.draw()
       this.rafId = requestAnimationFrame(loop)
     }

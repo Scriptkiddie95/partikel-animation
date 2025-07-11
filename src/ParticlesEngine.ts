@@ -130,13 +130,20 @@ export class ParticlesEngine {
     }
   }
 
-  run() {
+  run(onComplete?: () => void) {
     this.lastTime = null
     const loop = (timestamp: number) => {
       const dt = this.lastTime === null ? 0.016 : (timestamp - this.lastTime) / 1000
       this.lastTime = timestamp
       this.update(dt)
       this.draw()
+      const done = this.particles.every(
+        p => p.x === p.targetX && p.y === p.targetY
+      )
+      if (done) {
+        onComplete?.()
+        return
+      }
       this.rafId = requestAnimationFrame(loop)
     }
     this.rafId = requestAnimationFrame(loop)

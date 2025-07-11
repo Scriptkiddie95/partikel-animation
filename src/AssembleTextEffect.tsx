@@ -1,5 +1,5 @@
 // AssembleTextEffect.tsx – Initiale Partikel-Zusammensetzung
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import useMeasure from 'react-use-measure'
 import { ParticlesEngine } from './ParticlesEngine'
 
@@ -13,9 +13,11 @@ const AssembleTextEffect: React.FC<AssembleTextEffectProps> = ({ text, fontSize 
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const engineRef = useRef<ParticlesEngine | null>(null)
   const [containerRef, bounds] = useMeasure()
+  const [showText, setShowText] = useState(false)
 
   useEffect(() => {
     let cancelled = false
+    setShowText(false)
 
     const start = async () => {
       await document.fonts?.ready
@@ -66,7 +68,7 @@ const AssembleTextEffect: React.FC<AssembleTextEffectProps> = ({ text, fontSize 
       equationId: 'mother_wave',
     })
     engine.init(targets)
-    engine.run()
+    engine.run(() => setShowText(true))
     engineRef.current = engine
 
     }
@@ -104,6 +106,8 @@ const AssembleTextEffect: React.FC<AssembleTextEffectProps> = ({ text, fontSize 
           color,
           textAlign: 'center',
           whiteSpace: 'nowrap',
+          opacity: showText ? 1 : 0,
+          transition: 'opacity 0.4s ease',
         }}
       >
         {text}

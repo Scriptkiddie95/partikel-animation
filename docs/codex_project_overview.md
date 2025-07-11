@@ -25,7 +25,6 @@ Das Repository `system-hero-particles` enthält ein mit **Vite** generiertes Rea
 
 ### ❓Unfertig / Widersprüchlich
 
-- `create-particles-demo.ts`: unvollständig oder leer
 - `README.md`: endet mit persönlichem Log („hier ist etwas schiefgelaufen“)
 
 ---

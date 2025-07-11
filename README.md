@@ -1,19 +1,19 @@
-# System Hero Particles
 
-A Vite-powered React/TypeScript demo where particles gather to form the **System Hero** title. The animation relies on an inverted wave function and runs in the browser.
+This project contains a React-based prototype for the **System Hero** landing page.
+Particles gather from the surrounding space and assemble into text using an inverted wave equation.
+Background on this idea and current challenges can be found in
+[docs/codex_project_overview.md](docs/codex_project_overview.md#L30-L67).
 
-## Setup
+## Key Modules
 
-```bash
-npm install
-npm run dev
-```
+The planned modular structure includes:
 
-The goal is described in `docs/codex_goal_animation.md` where particles move "von außen nach innen" and shape the text "System Hero" at startup.
+- `engine/` – particle algorithms (`particles.engine.ts`, `wave.runtime.ts`)
+- `canvas/` – React components running the engine
+- `agents/` – control files such as `canvas.agent.md`
+- `prompts/` – text prompts for generating particle positions
+- `overlays/` – debug helpers like `canvas.debugOverlay.agent.md`
+- `math/` – math utilities
+- `cli/` – setup helpers (`codex.setup.cli.ts`)
 
-## Notes
-
-As highlighted in `docs/codex_animation_prompt.md`, avoid automatic test or build commands:
-- `.codex.lock` must not be present
-- do not run `npm test` or `npm build`
-- use `npm run dev` (or `npm start` if defined)
+See the `docs/` folder for more details.

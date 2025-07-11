@@ -1,10 +1,3 @@
-# 🎯 Ziel: System Hero Particles
+# Project Goal
 
-Visualisierung hochdynamischer mathematischer Partikelsysteme
-- Basierend auf sinusförmigen Wellengleichungen
-- Eingesetzt für Landingpage-Animationen
-
-Verwendete Bibliotheken:
-- `three.js`
-- `vite`
-- eigene Shader/MathLib in `particle-math.ts`
+For the full description of the System Hero particle animation goal, see [docs/codex/goal.md](../docs/codex/goal.md).

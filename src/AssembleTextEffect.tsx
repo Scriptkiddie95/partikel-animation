@@ -1,5 +1,6 @@
 // AssembleTextEffect.tsx – Initiale Partikel-Zusammensetzung
 import { useEffect, useRef } from 'react'
+import { ParticlesEngine } from './ParticlesEngine'
 
 interface AssembleTextEffectProps {
   text: string
@@ -9,27 +10,46 @@ interface AssembleTextEffectProps {
 
 const AssembleTextEffect: React.FC<AssembleTextEffectProps> = ({ text, fontSize = 128, color = '#0ff' }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const engineRef = useRef<ParticlesEngine | null>(null)
 
   useEffect(() => {
-    if (!canvasRef.current) return
-    const ctx = canvasRef.current.getContext('2d')
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const ctx = canvas.getContext('2d')
     if (!ctx) return
 
-    const { width, height } = canvasRef.current
-    ctx.clearRect(0, 0, width, height)
+    const { width, height } = canvas
 
-    // Zeichne Text als Maskierung für Partikel
-    ctx.fillStyle = color
-    ctx.font = `${fontSize}px Orbitron, sans-serif`
-    ctx.textAlign = 'center'
-    ctx.textBaseline = 'middle'
-    ctx.fillText(text, width / 2, height / 2)
+    // Offscreen canvas for text mask
+    const offCanvas = document.createElement('canvas')
+    offCanvas.width = width
+    offCanvas.height = height
+    const offCtx = offCanvas.getContext('2d')
+    if (!offCtx) return
 
-    // Extrahiere Zielpunkte und starte Partikelanimation
-    // const imageData = ctx.getImageData(0, 0, width, height) follow math_map.md
-    // const targetPoints = []
-    // for{
-    // animateParticlesToText(ctx, imageData, { color })
+    offCtx.fillStyle = color
+    offCtx.font = `${fontSize}px Orbitron, sans-serif`
+    offCtx.textAlign = 'center'
+    offCtx.textBaseline = 'middle'
+    offCtx.fillText(text, width / 2, height / 2)
+
+    const data = offCtx.getImageData(0, 0, width, height).data
+    const targets: { x: number; y: number }[] = []
+    for (let y = 0; y < height; y += 2) {
+      for (let x = 0; x < width; x += 2) {
+        const idx = (y * width + x) * 4
+        if (data[idx + 3] > 128) targets.push({ x, y })
+      }
+    }
+
+    const engine = new ParticlesEngine(ctx, width, height, { equationId: 'mother_wave' })
+    engine.init(targets)
+    engine.run()
+    engineRef.current = engine
+
+    return () => {
+      engine.stop()
+    }
   }, [text, fontSize, color])
 
   return <canvas ref={canvasRef} width={800} height={300} />

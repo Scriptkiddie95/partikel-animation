@@ -1,3 +1,4 @@
+
 // 📦 wave.runtime.ts – Runtime Resolver für Partikel-Gleichungen
 
 export interface WaveParams {
@@ -24,6 +25,7 @@ export const waveFunctions = {
     x: number,
     y: number,
     _t: number,
+
     params: WaveParams,
   ): { vx: number; vy: number } => {
     const { gamma = 4.0, epsilon = 0.01, x0 = 0, y0 = 0 } = params
@@ -37,6 +39,7 @@ export const waveFunctions = {
     x: number,
     y: number,
     t: number,
+
     params: WaveParams,
   ): number => {
     const { A = 1.0, k = 0.1, omega = 2.0, alpha = 0.05, beta = 1.2, x0 = 0, y0 = 0 } = params
@@ -59,7 +62,6 @@ export const waveFunctions = {
     return (wave + gravity) * Math.exp(-alpha * t)
   }
 }
-
 export const resolveWave = (id: string) => {
   return waveFunctions[id] || waveFunctions['mother_wave']
 }

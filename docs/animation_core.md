@@ -27,7 +27,7 @@ Diese Technik wird **umgedreht**, sodass:
 - Die Funktion `DissipateTextEffect` kann vollständig ignoriert werden und nach unten auf die website gesetzt werden zur referenz.
 - Die Koordinaten stammen weiterhin aus der Canvas-Pixelauswertung
 
-- Die Bewegung soll durch `particles.engine.ts` geregelt werden, nicht durch Timeline-Zerfall für die Lade Animation
+ - Die Bewegung soll durch `ParticlesEngine.ts` geregelt werden, nicht durch Timeline-Zerfall für die Lade Animation
 - Die Partikel **erreichen** statt **verlassen** das Zielbild
 
 ---
@@ -36,7 +36,7 @@ Diese Technik wird **umgedreht**, sodass:
 
 1. [ ] Neue Komponente `AssembleTextEffect.tsx` schreiben (Zielgerichtete Bewegung)
 2. [ ] Alte Zerfallslogik vollständig entfernen (`status == Animate → Dissipate` raus)
-3. [ ] `particles.engine.ts` anpassen, sodass `targetX, targetY` → Fixpunkt ist
+3. [ ] `ParticlesEngine.ts` anpassen, sodass `targetX, targetY` → Fixpunkt ist
 4. [ ] Wellenbasierte Bewegung (`mother_wave`) einbauen → aus `wave.runtime.ts`
 5. [ ] Nur *sichtbare Textpixel* als Zielpunkte verwenden (wie in der Zerfallsversion)
 

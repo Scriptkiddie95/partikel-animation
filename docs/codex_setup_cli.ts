@@ -11,7 +11,7 @@ const FILES = [
   'wave.runtime.ts',
   'canvas.agent.md',
   'canvas.debugOverlay.agent.md',
-  'particles.engine.ts'
+  'ParticlesEngine.ts'
 ]
 
 const CONTENT_MAP: Record<string, string> = {
@@ -22,7 +22,7 @@ const CONTENT_MAP: Record<string, string> = {
   'wave.runtime.ts': '// Siehe wave.runtime.ts Inhalt (via Codex generiert)',
   'canvas.agent.md': '# Siehe canvas.agent.md Inhalt (via Codex generiert)',
   'canvas.debugOverlay.agent.md': '# Siehe canvas.debugOverlay.agent.md Inhalt (via Codex generiert)',
-  'particles.engine.ts': '// Siehe particles.engine.ts Inhalt (via Codex generiert)'
+  'ParticlesEngine.ts': '// Siehe ParticlesEngine.ts Inhalt (via Codex generiert)'
 }
 
 const BASE_PATH = path.resolve(__dirname, 'codex-particles-system')

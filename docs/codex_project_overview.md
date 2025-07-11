@@ -13,7 +13,7 @@ Das Repository `system-hero-particles` enthält ein mit **Vite** generiertes Rea
 - **React-Komponenten** wie `EmailInput.tsx`, `ParticleText.tsx`
 - **Canvas-Rendering mit GSAP** / ScrollTrigger
 - **Mathematische Runtime**: `wave.runtime.ts`
-- **Partikel-Engine**: `particles.engine.ts`
+ - **Partikel-Engine**: `src/ParticlesEngine.ts`
 - **Agenten-Logik**: `canvas.agent.md`, `wave.controller.agent.md`, `json.rules`
 
 ### 📄 Dokumentiert (konzeptionell)
@@ -85,7 +85,7 @@ Die Bewegung erfolgt über mathematisch gesteuerte Agenten mit Triggern wie `onL
 
 ```bash
 src/
-├── engine/                # particles.engine.ts, wave.runtime.ts
+├── engine/                # ParticlesEngine.ts, wave.runtime.ts
 ├── canvas/                # Canvas-Komponente, useParticlesEngine.ts
 ├── agents/                # canvas.agent.md, wave.controller.agent.md
 ├── prompts/               # textflow.prompt.md, generate_wave.prompt.md

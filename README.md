@@ -17,3 +17,14 @@ The planned modular structure includes:
 - `cli/` – setup helpers (`codex.setup.cli.ts`)
 
 See the `docs/` folder for more details.
+
+## Running the Animation
+
+To try the prototype locally, install dependencies and launch the Vite dev server:
+
+```bash
+npm install
+npm run dev
+```
+
+After the server starts, open the provided URL in your browser. The hero text animation begins automatically as soon as the page loads.

@@ -1,5 +1,6 @@
 // AssembleTextEffect.tsx – Initiale Partikel-Zusammensetzung
 import { useEffect, useRef } from 'react'
+import useMeasure from 'react-use-measure'
 import { ParticlesEngine } from './ParticlesEngine'
 
 interface AssembleTextEffectProps {
@@ -11,15 +12,17 @@ interface AssembleTextEffectProps {
 const AssembleTextEffect: React.FC<AssembleTextEffectProps> = ({ text, fontSize = 128, color = '#0ff' }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const engineRef = useRef<ParticlesEngine | null>(null)
+  const [containerRef, bounds] = useMeasure()
 
   useEffect(() => {
     const canvas = canvasRef.current
-    if (!canvas) return
+    if (!canvas || !bounds.width || !bounds.height) return
     const ctx = canvas.getContext('2d')
     if (!ctx) return
 
     const dpr = window.devicePixelRatio || 1
-    const { width, height } = canvas
+    const width = bounds.width
+    const height = bounds.height
     canvas.width = width * dpr
     canvas.height = height * dpr
     canvas.style.width = `${width}px`
@@ -51,7 +54,9 @@ const AssembleTextEffect: React.FC<AssembleTextEffectProps> = ({ text, fontSize 
       }
     }
 
-    const engine = new ParticlesEngine(ctx, width, height, { equationId: 'mother_wave' })
+    const engine = new ParticlesEngine(ctx, width, height, {
+      equationId: 'mother_wave',
+    })
     engine.init(targets)
     engine.run()
     engineRef.current = engine
@@ -59,9 +64,16 @@ const AssembleTextEffect: React.FC<AssembleTextEffectProps> = ({ text, fontSize 
     return () => {
       engine.stop()
     }
-  }, [text, fontSize, color])
+  }, [text, fontSize, color, bounds.width, bounds.height])
 
-  return <canvas ref={canvasRef} width={800} height={300} />
+  return (
+    <div ref={containerRef} style={{ width: '100%', height: '100%' }}>
+      <canvas
+        ref={canvasRef}
+        style={{ display: 'block', width: '100%', height: '100%' }}
+      />
+    </div>
+  )
 }
 
 export default AssembleTextEffect

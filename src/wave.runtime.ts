@@ -52,16 +52,32 @@ export const waveFunctions = {
     y: number,
     t: number,
     params: WaveParams,
-  ): number => {
-    const { A = 1.0, k = 0.1, omega = 2.0, alpha = 0.05, gamma = 3.0, epsilon = 0.1, x0 = 0, y0 = 0 } = params
+  ): { vx: number; vy: number } => {
+    const {
+      A = 1.0,
+      k = 0.1,
+      omega = 2.0,
+      alpha = 0.05,
+      gamma = 3.0,
+      epsilon = 0.1,
+      x0 = 0,
+      y0 = 0,
+    } = params
     const dx = x - x0
     const dy = y - y0
-    const r = Math.hypot(dx, dy)
+    const r = Math.hypot(dx, dy) || 1
     const wave = A * Math.sin(k * r - omega * t)
     const gravity = gamma / (r ** 2 + epsilon)
-    return (wave + gravity) * Math.exp(-alpha * t)
+    const magnitude = (wave + gravity) * Math.exp(-alpha * t)
+    const angle = Math.atan2(dy, dx)
+    return { vx: -Math.cos(angle) * magnitude, vy: -Math.sin(angle) * magnitude }
   }
 }
-export const resolveWave = (id: string) => {
-  return waveFunctions[id] || waveFunctions['mother_wave']
+export const resolveWave = (
+  id: keyof typeof waveFunctions | string,
+) => {
+  return (
+    waveFunctions[id as keyof typeof waveFunctions] ||
+    waveFunctions['mother_wave']
+  )
 }

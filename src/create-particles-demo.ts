@@ -1,4 +1,5 @@
-import { writeFileSync } from 'fs';
+// @ts-expect-error -- demo script, Node types not included
+import { writeFileSync } from 'node:fs'
 
 const files = {
   'src/ParticleText.tsx': `// <-- pack hier deinen ParticleText Code rein`,

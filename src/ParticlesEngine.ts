@@ -53,20 +53,25 @@ export class ParticlesEngine {
   update(dt: number) {
     this.time += dt
     for (const p of this.particles) {
-      const fx = this.equation(p.x, p.y, this.time, this.params)
+      const fx = this.equation(p.x, p.y, this.time, {
+        ...this.params,
+        x0: p.targetX,
+        y0: p.targetY,
+      })
+
       if (typeof fx === 'number') {
-        const dx = p.targetX - p.x
-        const dy = p.targetY - p.y
-        p.x += dx * 0.08
-        p.y += dy * 0.08
-        p.vx *= 0.9
-        p.vy *= 0.9
+        const angle = Math.atan2(p.targetY - p.y, p.targetX - p.x)
+        p.vx += Math.cos(angle) * fx
+        p.vy += Math.sin(angle) * fx
       } else {
-        p.vx = fx.vx
-        p.vy = fx.vy
-        p.x += p.vx
-        p.y += p.vy
+        p.vx += fx.vx
+        p.vy += fx.vy
       }
+
+      p.vx *= 0.9
+      p.vy *= 0.9
+      p.x += p.vx
+      p.y += p.vy
     }
   }
 

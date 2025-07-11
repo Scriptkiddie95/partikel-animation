@@ -18,7 +18,7 @@ const AssembleTextEffect: React.FC<AssembleTextEffectProps> = ({ text, fontSize 
     let cancelled = false
 
     const start = async () => {
-      await (document as any).fonts?.ready
+      await document.fonts?.ready
       if (cancelled) return
 
       const canvas = canvasRef.current
@@ -78,11 +78,34 @@ const AssembleTextEffect: React.FC<AssembleTextEffectProps> = ({ text, fontSize 
   }, [text, fontSize, color, bounds.width, bounds.height])
 
   return (
-    <div ref={containerRef} style={{ width: '100%', height: '100%' }}>
+    <div
+      ref={containerRef}
+      style={{ position: 'relative', width: '100%', height: '100%' }}
+    >
       <canvas
         ref={canvasRef}
-        style={{ display: 'block', width: '100%', height: '100%' }}
+        style={{
+          position: 'absolute',
+          inset: 0,
+          width: '100%',
+          height: '100%',
+        }}
       />
+      <span
+        style={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          fontSize: `${fontSize}px`,
+          fontFamily: 'Orbitron, sans-serif',
+          color,
+          textAlign: 'center',
+          whiteSpace: 'nowrap',
+        }}
+      >
+        {text}
+      </span>
     </div>
   )
 }

@@ -24,6 +24,7 @@ export class ParticlesEngine {
   private width: number
   private height: number
   private spawnRadius: number
+  private lastTime: number | null = null
   private rafId = 0
 
   constructor(
@@ -130,10 +131,10 @@ export class ParticlesEngine {
   }
 
   run() {
-    let lastTime: number | null = null
+    this.lastTime = null
     const loop = (timestamp: number) => {
-      const dt = lastTime === null ? 0.016 : (timestamp - lastTime) / 1000
-      lastTime = timestamp
+      const dt = this.lastTime === null ? 0.016 : (timestamp - this.lastTime) / 1000
+      this.lastTime = timestamp
       this.update(dt)
       this.draw()
       this.rafId = requestAnimationFrame(loop)
@@ -143,5 +144,6 @@ export class ParticlesEngine {
 
   stop() {
     cancelAnimationFrame(this.rafId)
+    this.lastTime = null
   }
 }

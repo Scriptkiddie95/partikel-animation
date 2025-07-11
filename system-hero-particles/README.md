@@ -1,6 +1,8 @@
 docs/codex_project_overview.md 
 
-an answer of your questions
+codex_goal_animation.md is interesting.
+
+show me the animations.
 
 ---
 Now your comment. ✅

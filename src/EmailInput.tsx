@@ -1,7 +1,6 @@
 import useMeasure from 'react-use-measure'
 import { useCallback, useState } from 'react'
 import type { ChangeEvent, FC, FormEvent, InputHTMLAttributes } from 'react'
-import DissipateTextEffect from './DissipateTextEffect'
 import { Status, type StatusType } from './Status'
 
 type EmailInputProps = {
@@ -9,11 +8,11 @@ type EmailInputProps = {
 } & InputHTMLAttributes<HTMLInputElement>
 
 const EmailInput: FC<EmailInputProps> = ({ onSubmit, ...props }) => {
-  const [formRef, dimensions] = useMeasure()
+  const [formRef] = useMeasure()
   const [value, setValue] = useState('')
   const [status, setStatus] = useState<StatusType>(Status.Idle)
 
-  const disabledStates: StatusType[] = [Status.Loading, Status.Animate]
+  const disabledStates: StatusType[] = [Status.Loading]
 
   const onEmailChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
     setStatus(Status.Idle)
@@ -32,7 +31,9 @@ const EmailInput: FC<EmailInputProps> = ({ onSubmit, ...props }) => {
 
     try {
       onSubmit(value)
-      setStatus(Status.Animate)
+      setStatus(Status.Success)
+      setValue('')
+      setTimeout(() => setStatus(Status.Idle), 1000)
     } catch {
       setStatus(Status.Error)
     }
@@ -52,7 +53,7 @@ const EmailInput: FC<EmailInputProps> = ({ onSubmit, ...props }) => {
           fontFamily: 'Orbitron, Inter, sans-serif',
           padding: '12px 16px',
           background: '#222',
-          color: status === Status.Animate ? 'transparent' : '#fff',
+          color: '#fff',
           border: 'none',
           borderRadius: 6,
           outline: 'none',
@@ -81,20 +82,7 @@ const EmailInput: FC<EmailInputProps> = ({ onSubmit, ...props }) => {
         [Enter]
       </button>
 
-      {status === Status.Animate && (
-        <DissipateTextEffect
-          size={48}
-          value={value}
-          color="#FFFFFF"
-          height={dimensions.height}
-          width={dimensions.width}
-          onDone={() => {
-            setStatus(Status.Success)
-            setValue('')
-            setTimeout(() => setStatus(Status.Idle), 1000)
-          }}
-        />
-      )}
+      {/* Legacy dissolve effect removed */}
     </form>
   )
 }

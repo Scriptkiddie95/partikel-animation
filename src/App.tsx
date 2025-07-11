@@ -1,8 +1,15 @@
 import ParticleText from './ParticleText'
 import EmailInput from './EmailInput'
 import AssembleTextEffect from './AssembleTextEffect'
+import { useEffect, useState } from 'react'
 
 export default function App() {
+  const [startHero, setStartHero] = useState(false)
+
+  useEffect(() => {
+    setStartHero(true)
+  }, [])
+
   return (
     <div
       style={{
@@ -23,7 +30,7 @@ export default function App() {
           fontSize: '2rem',
         }}
       >
-        <AssembleTextEffect text="System Hero" />
+        {startHero && <AssembleTextEffect text="System Hero" />}
       </section>
 
       {/* ParticleText Sections */}

@@ -1,12 +1,21 @@
-// wave.runtime.ts – Runtime Resolver for particle equations
 
+// 📦 wave.runtime.ts – Runtime Resolver für Partikel-Gleichungen
+
+export interface WaveParams {
+  A?: number
+  k?: number
+  omega?: number
+  alpha?: number
+  beta?: number
+  gamma?: number
+  epsilon?: number
+  x0?: number
+  y0?: number
+}
+
+// Gleichungen aus math_map (Python-Übersetzung)
 export const waveFunctions = {
-  wave_inward: (
-    x: number,
-    y: number,
-    t: number,
-    params: Record<string, number>
-  ) => {
+  wave_inward: (x: number, y: number, t: number, params: WaveParams): number => {
     const { A = 1.0, k = 0.1, omega = 2.0, alpha = 0.05, x0 = 0, y0 = 0 } = params
     const r = Math.hypot(x - x0, y - y0)
     return A * Math.sin(k * r - omega * t) * Math.exp(-alpha * t)
@@ -16,8 +25,9 @@ export const waveFunctions = {
     x: number,
     y: number,
     _t: number,
-    params: Record<string, number>
-  ) => {
+
+    params: WaveParams,
+  ): { vx: number; vy: number } => {
     const { gamma = 4.0, epsilon = 0.01, x0 = 0, y0 = 0 } = params
     const dx = x - x0
     const dy = y - y0
@@ -29,17 +39,10 @@ export const waveFunctions = {
     x: number,
     y: number,
     t: number,
-    params: Record<string, number>
-  ) => {
-    const {
-      A = 1.0,
-      k = 0.1,
-      omega = 2.0,
-      alpha = 0.05,
-      beta = 1.2,
-      x0 = 0,
-      y0 = 0,
-    } = params
+
+    params: WaveParams,
+  ): number => {
+    const { A = 1.0, k = 0.1, omega = 2.0, alpha = 0.05, beta = 1.2, x0 = 0, y0 = 0 } = params
     const r = Math.hypot(x - x0, y - y0)
     return A * Math.sin(k * r - omega * Math.pow(t, beta)) * Math.exp(-alpha * t)
   },
@@ -48,27 +51,17 @@ export const waveFunctions = {
     x: number,
     y: number,
     t: number,
-    params: Record<string, number>
-  ) => {
-    const {
-      A = 1.0,
-      k = 0.1,
-      omega = 2.0,
-      alpha = 0.05,
-      gamma = 3.0,
-      epsilon = 0.1,
-      x0 = 0,
-      y0 = 0,
-    } = params
+    params: WaveParams,
+  ): number => {
+    const { A = 1.0, k = 0.1, omega = 2.0, alpha = 0.05, gamma = 3.0, epsilon = 0.1, x0 = 0, y0 = 0 } = params
     const dx = x - x0
     const dy = y - y0
     const r = Math.hypot(dx, dy)
     const wave = A * Math.sin(k * r - omega * t)
     const gravity = gamma / (r ** 2 + epsilon)
     return (wave + gravity) * Math.exp(-alpha * t)
-  },
+  }
 }
-
 export const resolveWave = (id: string) => {
-  return waveFunctions[id as keyof typeof waveFunctions] || waveFunctions.mother_wave
+  return waveFunctions[id] || waveFunctions['mother_wave']
 }

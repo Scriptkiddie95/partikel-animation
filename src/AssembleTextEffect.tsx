@@ -15,10 +15,16 @@ const AssembleTextEffect: React.FC<AssembleTextEffectProps> = ({ text, fontSize 
   const [containerRef, bounds] = useMeasure()
 
   useEffect(() => {
-    const canvas = canvasRef.current
-    if (!canvas || !bounds.width || !bounds.height) return
-    const ctx = canvas.getContext('2d')
-    if (!ctx) return
+    let cancelled = false
+
+    const start = async () => {
+      await (document as any).fonts?.ready
+      if (cancelled) return
+
+      const canvas = canvasRef.current
+      if (!canvas || !bounds.width || !bounds.height) return
+      const ctx = canvas.getContext('2d')
+      if (!ctx) return
 
     const dpr = window.devicePixelRatio || 1
     const width = bounds.width
@@ -61,8 +67,13 @@ const AssembleTextEffect: React.FC<AssembleTextEffectProps> = ({ text, fontSize 
     engine.run()
     engineRef.current = engine
 
+    }
+
+    start()
+
     return () => {
-      engine.stop()
+      cancelled = true
+      engineRef.current?.stop()
     }
   }, [text, fontSize, color, bounds.width, bounds.height])
 

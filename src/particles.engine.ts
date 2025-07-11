@@ -1,8 +1,7 @@
 // 🚀 particles.engine.ts – zentrale Steuerlogik für das Partikelsystem
 
-import { resolveWave, waveFunctions } from '../docs/wave_runtime'
+import { resolveWave } from '../docs/wave_runtime'
 import { getTextTargets } from '../docs/textflow.prompt.md'
-import { getParams } from '../docs/wave.controller.agent.md'
 
 interface Particle {
   x: number
@@ -16,14 +15,19 @@ interface Particle {
 
 export class ParticlesEngine {
   private particles: Particle[] = []
-  private equation: (x: number, y: number, t: number, params: any) => number | { vx: number; vy: number }
-  private params: any
+  private equation: (x: number, y: number, t: number, params: Record<string, unknown>) => number | { vx: number; vy: number }
+  private params: Record<string, unknown>
   private time: number = 0
   private ctx: CanvasRenderingContext2D
   private width: number
   private height: number
 
-  constructor(ctx: CanvasRenderingContext2D, width: number, height: number, config: { equationId: string, params: any }) {
+  constructor(
+    ctx: CanvasRenderingContext2D,
+    width: number,
+    height: number,
+    config: { equationId: string; params: Record<string, unknown> }
+  ) {
     this.ctx = ctx
     this.width = width
     this.height = height
@@ -81,7 +85,7 @@ export class ParticlesEngine {
   }
 
   run() {
-    const loop = (timestamp: number) => {
+    const loop = () => {
       this.update(0.016) // ~60 FPS
       this.draw()
       requestAnimationFrame(loop)

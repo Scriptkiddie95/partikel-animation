@@ -1,6 +1,6 @@
 import ParticleText from './ParticleText'
 import EmailInput from './EmailInput'
-import AssembleTextEffect from './AssembleTextEffect'
+import HeroTitleEffect from './HeroTitleEffect'
 
 export default function App() {
 
@@ -14,7 +14,7 @@ export default function App() {
         overflowX: 'hidden',
       }}
     >
-      {/* Hero Section mit AssembleTextEffect */}
+      {/* Hero Section mit HeroTitleEffect */}
       <section
         style={{
           height: '100vh',
@@ -24,7 +24,7 @@ export default function App() {
           fontSize: '2rem',
         }}
       >
-        <AssembleTextEffect text="System Hero" />
+        <HeroTitleEffect text="System Hero" />
       </section>
 
       {/* ParticleText Sections */}

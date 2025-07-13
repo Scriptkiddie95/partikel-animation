@@ -1,49 +1,28 @@
-# 🎼 AGENTS.md – Orchestrierung aller Codex Agenten Anfragen.
-
-> *„Wenn die Partikel sich zur Musik formen, tanzen sie im Takt des Codex.“*
-
-Willkommen in der **Agenten-Konzertleitung** von `system-hero-particles`.\
-Hier werden alle `*.agent.md` Dateien harmonisiert, verbunden und als **kompositorische Partitur** dokumentiert.
+Erzeuge eine React-Komponente `HeroTitleEffect.tsx`, die den folgenden Effekt ausführt:
 
 ---
 
-## 🧠 Was ist ein Agent?
+## 🎯 Ziel
 
-Ein Agent in diesem System ist eine **semantische Steueranweisung**, die beschreibt, *wann*, *wo* und *wie* eine Partikelanimation stattfindet. Die Dateien dienen aktuell als **strukturierte Markdown-Komponenten** – *noch ohne echte Executor-Logik*.
+Der Text „System Hero“ erscheint beim Laden der Seite mit einem magischen Animationseffekt:  
+Partikel fliegen von links ein und formen langsam die Buchstaben des Textes – **buchstabenweise, synchron, nicht gleichzeitig**.
 
-Ziel: eine zentrale `Agent Engine`, die diese Dateien analysiert, interpretiert und zur Laufzeit automatisch mit dem Canvas synchronisiert.
-
----
-
-## 📜 Registrierte Agenten
-
-| Agent-Datei                    | Beschreibung                                               | Status       |
-| ------------------------------ | ---------------------------------------------------------- | ------------ |
-| `canvas.agent.md`              | Hauptsteuerung der Partikelbewegung auf dem Canvas         | Konzipiert ✅ |
-| `wave.controller.agent.md`     | Auswahl der mathematischen Gleichung + Parametervarianten  | Aktiv ✅      |
-| `canvas.debugOverlay.agent.md` | Visual Debug Layer zur Kontrolle von Animation + Gleichung | Dev-Modus ⚠️ |
-| `textflow.prompt.md`           | Textkoordinaten-Mapping über HTML-Parsing                  | Aktiv ✅      |
-
+Nach Abschluss der Partikel-Animation wird der echte Text im DOM sichtbar und vollständig selektierbar. Der Partikeleffekt darf **nicht doppelt oder statisch bleiben**. Er ist rein visuell und wird danach entfernt oder ausgeblendet.
 
 ---
 
-## 🧩 Zielstruktur für Live-Ausführung (künftig)
+## 🛠 Technische Anforderungen
 
+### Canvas:
+- Verwende ein `<canvas>` mit absoluter Positionierung, über der Textstelle
+- Die Animation wird per `requestAnimationFrame()` gesteuert
+- Jeder Partikel hat:  
+  `x`, `y`, `radius`, `rgba`, `targetX`, `targetY`
+
+### Bewegung:
+- Partikel fliegen von `x_start = -100 + random(0–50)` zum `x_target` (Buchstabenposition)
+- Formel:
 ```ts
-// Pseudo: agent-executor.ts
-import { loadAgent } from './AGENTS.md'
-const canvasAgent = loadAgent('canvas.agent.md')
-canvasAgent.execute(canvasContext, textTargets)
-```
-
----
-
-## 🚧 ToDo für vollständige Agentenintegration
-
-Animation fertig stellen.
-
----
-
-## 📌 Fazit
-
-schau in den \docs ordner als nächstes!
+x(t) = x₀ + (x_target - x₀) * E(t)
+y(t) = y₀ + (y_target - y₀) * E(t)
+E(t) = 1 - cos(t * π) / 2 // EaseInOut

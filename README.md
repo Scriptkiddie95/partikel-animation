@@ -25,6 +25,12 @@ Damit wird der Vite-Entwicklungsserver gestartet und die App ist unter `http://l
 
 System Hero Particles zeigt, wie Text per Partikel sichtbar gemacht und anschließend in identischen DOM-Text übergeht. Die Animation bildet das Herzstück der späteren Website für Kunden-Onboarding und Unternehmenspräsentation.
 
+## Beispiel: Korrekte Breite bei 125% Zoom
+
+1. Entwicklungsserver mit `npm run dev` starten.
+2. Im Browser die Ansicht auf **125 %** zoomen.
+3. Der Text auf dem Canvas überlappt weiterhin pixelgenau den DOM-Text, weil Letter‑Spacing nun berücksichtigt wird.
+
 ## Logbuch
 
 - 2025-07-19: README neu erstellt, Installations- und Startbefehle beschrieben sowie Setup-Skripte erwähnt.
@@ -32,3 +38,4 @@ System Hero Particles zeigt, wie Text per Partikel sichtbar gemacht und anschlie
 - 2025-07-20: ParticleIntro-Komponente erstellt und App.tsx angepasst.
 - 2025-07-21: Messfunktionen hinzugefuegt und Offsets zur absoluten Positionierung verwendet.
 - 2025-07-22: App.tsx Wrapper fuer ParticleIntro mit fester Hoehe hinzugefuegt.
+- 2025-07-23: Letter-Spacing korrekt vermessen und Offsets auf Zoom vorbereitet.

@@ -4,6 +4,7 @@ import {
   loadOffsets,
   measureElementRect,
   measureTextMetrics,
+  getLetterSpacing,
   saveOffsets,
   type Offsets,
 } from '../utils/measure'; // Messfunktionen fuer exakte Positionen
@@ -146,7 +147,8 @@ export const ParticleIntro: React.FC<ParticleIntroProps> = ({
   useLayoutEffect(() => { // Nach Layout wird die Groesse gemessen
     if (headlineRef.current && phase === 'preparing') {
       const r = measureElementRect(headlineRef.current); // DOM-Box abfragen
-      const metrics = measureTextMetrics(font, text); // Glyphenbox messen
+      const spacing = getLetterSpacing(headlineRef.current); // Letter-Spacing lesen
+      const metrics = measureTextMetrics(font, text, spacing); // Glyphenbox messen
       const offs = computeOffsets(r, metrics); // Offsets berechnen
       setRect(r);
       setOffsets(offs);

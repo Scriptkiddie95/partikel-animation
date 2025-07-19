@@ -41,3 +41,4 @@ System Hero Particles zeigt, wie Text per Partikel sichtbar gemacht und anschlie
 - 2025-07-23: Letter-Spacing korrekt vermessen und Offsets auf Zoom vorbereitet.
 - 2025-07-24: Canvas-Dimensionen mit devicePixelRatio skaliert und DPR-Ausgabe in
   ParticleIntro integriert.
+- 2025-07-25: ToDo-Liste erstellt, um Aufgaben zur perfekten Ueberlagerung von H1 und Canvas zu sammeln.

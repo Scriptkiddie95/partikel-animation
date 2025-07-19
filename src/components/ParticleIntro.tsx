@@ -1,4 +1,12 @@
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'; // React-Import inklusive Hooks
+import {
+  computeOffsets,
+  loadOffsets,
+  measureElementRect,
+  measureTextMetrics,
+  saveOffsets,
+  type Offsets,
+} from '../utils/measure'; // Messfunktionen fuer exakte Positionen
 
 // Schnittstelle fuer die Eigenschaften der Partikel-Animation
 export interface ParticleIntroProps {
@@ -11,8 +19,11 @@ export interface ParticleIntroProps {
 
 // Schnittstelle fuer die Eigenschaften der Zeichenkomponente
 interface AssembleEffectProps {
-  text: string; // Text, der als Partikel dargestellt wird
-  rect: DOMRect; // Position und Groesse des DOM-Textes
+  text: string; // Text, das als Partikel dargestellt wird
+  width: number; // gemessene Breite des DOM-Texts
+  height: number; // gemessene Hoehe des DOM-Texts
+  offsetX: number; // X-Offset innerhalb des Wrappers
+  offsetY: number; // Y-Offset innerhalb des Wrappers
   font: string; // Schriftdefinition fuer das Canvas
   padding: number; // Innenabstand fuer das Canvas
   onComplete: () => void; // Callback nach Abschluss der Animation
@@ -31,7 +42,7 @@ interface Particle {
 }
 
 // Komponente, die die Partikel aufs Canvas zeichnet
-const AssembleEffect: React.FC<AssembleEffectProps> = ({ text, rect, font, padding, onComplete }) => {
+const AssembleEffect: React.FC<AssembleEffectProps> = ({ text, width, height, offsetX, offsetY, font, padding, onComplete }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null); // Referenz auf das Canvas
 
   useEffect(() => { // Startet die Partikelanimation
@@ -105,16 +116,16 @@ const AssembleEffect: React.FC<AssembleEffectProps> = ({ text, rect, font, paddi
     }
     animate(); // Animation starten
     return () => cancelAnimationFrame(animationFrameId); // Aufraeumen bei Unmount
-  }, [text, rect, font, padding, onComplete]); // Abhaengigkeiten der Animation
+  }, [text, width, height, font, padding, onComplete]); // Abhaengigkeiten der Animation
 
   // Canvas wird absolut positioniert
   return (
     <canvas
       ref={canvasRef} // Referenz setzen
-      width={rect.width + padding * 2} // Breite inklusive Padding
-      height={rect.height + padding * 2} // Hoehe inklusive Padding
+      width={width + padding * 2} // Breite inklusive Padding
+      height={height + padding * 2} // Hoehe inklusive Padding
       className="pointer-events-none absolute transition-opacity duration-[400ms]" // Stylingklassen
-      style={{ top: rect.top - padding, left: rect.left - padding }} // Positionierung ueber Props
+      style={{ top: offsetY - padding, left: offsetX - padding }} // Positionierung ueber Props
     />
   );
 };
@@ -128,21 +139,32 @@ export const ParticleIntro: React.FC<ParticleIntroProps> = ({
   fadeDuration = 400,
 }) => {
   const [rect, setRect] = useState<DOMRect | null>(null); // gemessene BoundingBox
+  const [offsets, setOffsets] = useState<Offsets | null>(null); // berechnete Offsets
   const [phase, setPhase] = useState<'preparing' | 'animating' | 'fading'>('preparing'); // aktueller Ablaufstatus
   const headlineRef = useRef<HTMLHeadingElement | null>(null); // Referenz auf das H1 Element
 
   useLayoutEffect(() => { // Nach Layout wird die Groesse gemessen
-    if (headlineRef.current && phase === 'preparing') { // Nur in der Startphase
-      setRect(headlineRef.current.getBoundingClientRect()); // BoundingBox speichern
+    if (headlineRef.current && phase === 'preparing') {
+      const r = measureElementRect(headlineRef.current); // DOM-Box abfragen
+      const metrics = measureTextMetrics(font, text); // Glyphenbox messen
+      const offs = computeOffsets(r, metrics); // Offsets berechnen
+      setRect(r);
+      setOffsets(offs);
+      saveOffsets('particleOffsets', offs); // optional speichern
     }
-  }, [phase]); // nur reagieren wenn sich die Phase aendert
+  }, [phase, font, text]);
+
+  useEffect(() => {
+    const saved = loadOffsets('particleOffsets'); // gespeicherte Werte abrufen
+    if (saved) setOffsets(saved);
+  }, []); // nur beim ersten Mount
 
   useEffect(() => { // Startet die Animation
-    if (rect && phase === 'preparing') { // Wenn das Messen abgeschlossen ist
+    if (rect && offsets && phase === 'preparing') {
       const timer = setTimeout(() => setPhase('animating'), 300); // kurze Pause vor Start
-      return () => clearTimeout(timer); // Timer bereinigen
+      return () => clearTimeout(timer);
     }
-  }, [rect, phase]); // Abhaengigkeiten des Effekts
+  }, [rect, offsets, phase]);
 
   const handleAnimationComplete = useCallback(() => { // Callback nach Animation
     setTimeout(() => setPhase('fading'), holdDuration); // Nach Haltezeit ausblenden
@@ -152,32 +174,42 @@ export const ParticleIntro: React.FC<ParticleIntroProps> = ({
   const canvasOpacity = { opacity: phase === 'fading' ? 0 : 1 }; // Sichtbarkeit Canvas steuern
 
   return (
-    <div className="relative inline-block"> {/* Wrapper zur Positionierung */}
+    <div className="relative w-full h-[160px]"> {/* Absoluter Wrapper */}
       <h1
         ref={headlineRef} // Referenz fuer Messung
-        className="text-[80px] font-bold tracking-[0.02em] m-0 p-0 whitespace-nowrap transition-colors" // Headline-Stil
-        style={{ fontFamily: font, transitionDuration: `${fadeDuration}ms`, ...headlineStyle }} // Dynamische Styles
+        className="text-[80px] font-bold tracking-[0.02em] m-0 p-0 whitespace-nowrap transition-colors absolute" // Headline-Stil
+        style={{
+          fontFamily: font,
+          transitionDuration: `${fadeDuration}ms`,
+          left: offsets ? offsets.offsetX : 0,
+          top: offsets ? offsets.offsetY : 0,
+          visibility: offsets ? 'visible' : 'hidden',
+          ...headlineStyle,
+        }}
       >
-        {text} {/* Sichtbarer Text */}
+        {text}
       </h1>
 
-      {phase === 'animating' && rect && (
+      {phase === 'animating' && rect && offsets && (
         <AssembleEffect
           text={text} // Text fuer die Partikel
-          rect={rect} // Position und Groesse
+          width={rect.width} // Breite des Textes
+          height={rect.height} // Hoehe des Textes
+          offsetX={offsets.offsetX} // horizontale Position
+          offsetY={offsets.offsetY} // vertikale Position
           font={font} // Schrift fuer das Canvas
           padding={padding} // Innenabstand des Canvas
           onComplete={handleAnimationComplete} // Meldung nach Ende
         />
       )}
 
-      {phase === 'fading' && rect && (
+      {phase === 'fading' && rect && offsets && (
         <canvas
           className="pointer-events-none absolute transition-opacity" // Fade-Canvas
           style={{
             ...canvasOpacity, // Transparenz steuern
-            top: rect.top - padding, // Position Y
-            left: rect.left - padding, // Position X
+            top: offsets.offsetY - padding, // Position Y
+            left: offsets.offsetX - padding, // Position X
             transitionDuration: `${fadeDuration}ms`, // Dauer des Fades
           }}
           width={rect.width + padding * 2} // Breite inklusive Padding

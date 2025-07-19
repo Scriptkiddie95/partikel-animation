@@ -71,7 +71,6 @@ Das Template wird später die Basis für **System Hero**: Ein digitales Interfac
 
 #### Letzter Schritt.
 
-Bitte schreib auch die README.md für unser template einmal vollständig neu.
-
-Sowie ganz unten ein protokoll. Wo du jedes mal am Ende deiner code änderungen ein Eintrag + Zusammenfassung was du getan hast. Hinzufügst! 
+Erstelle in der README.md ganz unten ein protokoll. Wo du jedes mal am Ende deine code änderungen ein Eintrag + Zusammenfassung was du getan hast. Hinzufügst! 
 Ein Logbuch für die Versionierung und kommunikation zukünftiger Agenten Anfragen. 
+fasse keinen alten Log Einträge an. 

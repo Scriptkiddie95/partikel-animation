@@ -1,28 +1,72 @@
-Erzeuge eine React-Komponente `HeroTitleEffect.tsx`, die den folgenden Effekt ausführt:
+### 🔧 Ziel
+
+- **Canvas und DOM-Text decken sich absolut**, auch bei Zoom (125%, 150%) oder Retina Displays.
+- Verwendung von **React + TypeScript + Tailwind**.
+- Die Animation ist **die Grundlage der ganzen Website**: Jeder Buchstabe eines Textes wird per Partikel sichtbar gemacht.
+- Nach der Animation folgt ein sanfter Crossfade zu markierbarem Text, **Pixel für Pixel identisch**.
 
 ---
 
-## 🎯 Ziel
+### ⚖️ Fundamentale Architekturänderung
 
-Der Text „System Hero“ erscheint beim Laden der Seite mit einem magischen Animationseffekt:  
-Partikel fliegen von links ein und formen langsam die Buchstaben des Textes – **buchstabenweise, synchron, nicht gleichzeitig**.
+**Vertikale Positionen = absolut berechnet**  
+**Horizontale Breite = 100% (fluid)**  
 
-Nach Abschluss der Partikel-Animation wird der echte Text im DOM sichtbar und vollständig selektierbar. Der Partikeleffekt darf **nicht doppelt oder statisch bleiben**. Er ist rein visuell und wird danach entfernt oder ausgeblendet.
+Statt `relative`, `fixed` oder `rect.top`, wollen wir **alles selbst bestimmen**:
+
+- Wir messen im Hintergrund (unsichtbar gerendert):
+  - DOM-Text mit `getBoundingClientRect()`
+  - Glyphen mit `ctx.measureText()` (Canvas)
+  - devicePixelRatio, Browser-Zoom, Plattforminfos
+- Danach berechnen wir:
+  ```ts
+  offsetX = (htmlWidth  - glyphWidth)  / 2;
+  offsetY = (htmlHeight - glyphHeight) / 2;
+  ```
+- Diese Werte werden als **absolute CSS-Positionen** verwendet für:
+  - `<canvas>`
+  - `<h1>`
+- Wir nutzen eine loading Animation um die berechnungs zeit der geräte Infos zu kalkulieren. Danach blenden wir die Website ein. Sowie nutzen wir dafür Cookies. 
+
+Optional: Speichern des Offsets in `localStorage` (Profiling)
 
 ---
 
-## 🛠 Technische Anforderungen
+### ⚡ Setup
 
-### Canvas:
-- Verwende ein `<canvas>` mit absoluter Positionierung, über der Textstelle
-- Die Animation wird per `requestAnimationFrame()` gesteuert
-- Jeder Partikel hat:  
-  `x`, `y`, `radius`, `rgba`, `targetX`, `targetY`
+- Tailwind für alle Styles
+- Absolute Wrapper-Box mit vordefinierter Höhe (z. B. `h-[160px]`)
+- `font-size`, `font-family`, `font-weight` synchronisieren DOM & Canvas
+- Keine `rem` mehr in Canvas! Nur exakte `px`
 
-### Bewegung:
-- Partikel fliegen von `x_start = -100 + random(0–50)` zum `x_target` (Buchstabenposition)
-- Formel:
-```ts
-x(t) = x₀ + (x_target - x₀) * E(t)
-y(t) = y₀ + (y_target - y₀) * E(t)
-E(t) = 1 - cos(t * π) / 2 // EaseInOut
+---
+
+### ✨ Bonus-Ziele (für später, kleine Vorwarnung)
+
+- Scroll-Trigger für mehrzeilige Headlines
+- Rechts animierte 3D-Symbole (Three.js)
+- Magisches Transformieren beim Scrollen in neue Texte/Symbole
+- API für dynamisch generierte Partikeltexte
+- Headless CMS Integration (Contentful, Sanity, o.a.)
+
+---
+
+### Bitte tue Folgendes:
+
+0.5. onvertiere die partikel-animation-work.html in eine tsx datei. und packe die selbe animation alles auch auf die app.tsx.
+-> Sowie möchte ich das du partikel-animation-work einfach unberührt lässt als Vorlage für unser Ziel. Eventuell ist es sinnvoll berechnungen in eine ts. Datei auszulagern.
+1. **Baue das neue Grundgerüst in React + TS + Tailwind (Canvas + DOM synchronisiert)**
+2. **Kommentiere jede Zeile**, damit ich das perfekt verstehe
+3. **Verwende keine Position: fixed**, sondern immer absolute + eigene Berechnung
+4. **Verwende systematische Props für Text, Font, Padding, etc.**
+Optional:
+5. Binde optional das Setup per `setup.ps1` oder `readme.md` für scaffold ein (auf Wunsch inkl. Quellcode.)
+6. "Am besten ersteinmal testweise mit cookies arbeiten, backend kommt später." 
+
+---
+
+Das Template wird später die Basis für **System Hero**: Ein digitales Interface, das mit reiner Rechenlogik Partikel, Text, 3D und Navigation in eins verschmelzen lässt.
+
+
+
+

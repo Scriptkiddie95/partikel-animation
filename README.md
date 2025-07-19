@@ -42,3 +42,4 @@ System Hero Particles zeigt, wie Text per Partikel sichtbar gemacht und anschlie
 - 2025-07-24: Canvas-Dimensionen mit devicePixelRatio skaliert und DPR-Ausgabe in
   ParticleIntro integriert.
 - 2025-07-25: ToDo-Liste erstellt, um Aufgaben zur perfekten Ueberlagerung von H1 und Canvas zu sammeln.
+- 2025-07-26: Dokumentationspfad fuer goal.md korrigiert und fehlende Datei docs/codex/goal.md angelegt.

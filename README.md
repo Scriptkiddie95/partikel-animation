@@ -31,3 +31,4 @@ System Hero Particles zeigt, wie Text per Partikel sichtbar gemacht und anschlie
 - 2025-07-19: Tailwind-Konfiguration hinzugefuegt und main.tsx eingerichtet.
 - 2025-07-20: ParticleIntro-Komponente erstellt und App.tsx angepasst.
 - 2025-07-21: Messfunktionen hinzugefuegt und Offsets zur absoluten Positionierung verwendet.
+- 2025-07-22: App.tsx Wrapper fuer ParticleIntro mit fester Hoehe hinzugefuegt.

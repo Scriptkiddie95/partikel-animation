@@ -173,6 +173,37 @@ export const ParticleIntro: React.FC<ParticleIntroProps> = ({
     if (saved) setOffsets(saved);
   }, []); // nur beim ersten Mount
 
+  // Bei Resize oder Aenderung der Pixel Ratio neu vermessen
+  useEffect(() => {
+    function updateMeasurements() {
+      if (headlineRef.current) {
+        const r = measureElementRect(headlineRef.current); // DOM-Box lesen
+        const spacing = getLetterSpacing(headlineRef.current); // Letter-Spacing ermitteln
+        const metrics = measureTextMetrics(font, text, spacing); // Glyphen vermessen
+        const offs = computeOffsets(r, metrics); // Offsets berechnen
+        setRect(r);
+        setOffsets(offs);
+      }
+    }
+
+    updateMeasurements(); // initiale Berechnung
+    window.addEventListener('resize', updateMeasurements); // Listener fuer Resize
+
+    let dprQuery = window.matchMedia(`(resolution: ${getPixelRatio()}dppx)`); // DPR-Query
+    const handleDprChange = () => {
+      dprQuery.removeEventListener('change', handleDprChange); // alten Listener loesen
+      dprQuery = window.matchMedia(`(resolution: ${getPixelRatio()}dppx)`); // neue Query
+      dprQuery.addEventListener('change', handleDprChange); // Listener neu setzen
+      updateMeasurements(); // Werte anpassen
+    };
+    dprQuery.addEventListener('change', handleDprChange); // Startlistener
+
+    return () => {
+      window.removeEventListener('resize', updateMeasurements); // Aufraeumen
+      dprQuery.removeEventListener('change', handleDprChange); // Listener entfernen
+    };
+  }, [font, text]);
+
   useEffect(() => { // Startet die Animation
     if (rect && offsets && phase === 'preparing') {
       const timer = setTimeout(() => setPhase('animating'), 300); // kurze Pause vor Start

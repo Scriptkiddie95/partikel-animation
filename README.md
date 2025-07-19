@@ -28,3 +28,4 @@ System Hero Particles zeigt, wie Text per Partikel sichtbar gemacht und anschlie
 ## Logbuch
 
 - 2025-07-19: README neu erstellt, Installations- und Startbefehle beschrieben sowie Setup-Skripte erwähnt.
+- 2025-07-19: Tailwind-Konfiguration hinzugefuegt und main.tsx eingerichtet.

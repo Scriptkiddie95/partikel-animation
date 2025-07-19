@@ -6,6 +6,7 @@ import {
   measureTextMetrics,
   getLetterSpacing,
   saveOffsets,
+  getPixelRatio,
   type Offsets,
 } from '../utils/measure'; // Messfunktionen fuer exakte Positionen
 
@@ -45,6 +46,7 @@ interface Particle {
 // Komponente, die die Partikel aufs Canvas zeichnet
 const AssembleEffect: React.FC<AssembleEffectProps> = ({ text, width, height, offsetX, offsetY, font, padding, onComplete }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null); // Referenz auf das Canvas
+  const dpr = getPixelRatio(); // Display-Aufloesung bestimmen
 
   useEffect(() => { // Startet die Partikelanimation
     const config = { startRadius: 60, easeFactor: 0.07, targetRadius: 1.0 }; // Grundeinstellungen fuer Partikel
@@ -52,6 +54,9 @@ const AssembleEffect: React.FC<AssembleEffectProps> = ({ text, width, height, of
     const ctx = canvas.getContext('2d')!; // 2D-Kontext sichern
     const particles: Particle[] = []; // Partikelliste initialisieren
 
+    canvas.width = (width + padding * 2) * dpr; // interne Breite mit DPR
+    canvas.height = (height + padding * 2) * dpr; // interne Hoehe mit DPR
+    ctx.scale(dpr, dpr); // Zeichenkontext skalieren
     ctx.font = font; // Schrift auf Canvas einstellen
     const fontMetrics = ctx.measureText(text); // Textmetrik ermitteln
     const baselineY = padding + fontMetrics.actualBoundingBoxAscent; // Y-Position fuer baseline bestimmen
@@ -65,9 +70,10 @@ const AssembleEffect: React.FC<AssembleEffectProps> = ({ text, width, height, of
           const randomAngle = Math.random() * Math.PI * 2; // Startwinkel zufaellig waehlen
           const randomDist = Math.random() * config.startRadius; // Startentfernung bestimmen
           particles.push({ // Partikel erzeugen
-            targetX: x, targetY: y, // Zielkoordinaten
-            x: x + Math.cos(randomAngle) * randomDist, // Startkoordinate X
-            y: y + Math.sin(randomAngle) * randomDist, // Startkoordinate Y
+            targetX: x / dpr, // Zielkoordinate X in CSS-Pixeln
+            targetY: y / dpr, // Zielkoordinate Y in CSS-Pixeln
+            x: x / dpr + Math.cos(randomAngle) * randomDist, // Startkoordinate X
+            y: y / dpr + Math.sin(randomAngle) * randomDist, // Startkoordinate Y
             radius: 0, targetRadius: config.targetRadius, // Start- und Zielradius
             isActive: false, // Aktiv-Status
             delay: Math.random() * 12, // Verzögerung bis zum Start
@@ -117,16 +123,21 @@ const AssembleEffect: React.FC<AssembleEffectProps> = ({ text, width, height, of
     }
     animate(); // Animation starten
     return () => cancelAnimationFrame(animationFrameId); // Aufraeumen bei Unmount
-  }, [text, width, height, font, padding, onComplete]); // Abhaengigkeiten der Animation
+  }, [text, width, height, font, padding, onComplete, dpr]); // Abhaengigkeiten der Animation inkl. DPR
 
   // Canvas wird absolut positioniert
   return (
     <canvas
       ref={canvasRef} // Referenz setzen
-      width={width + padding * 2} // Breite inklusive Padding
-      height={height + padding * 2} // Hoehe inklusive Padding
+      width={(width + padding * 2) * dpr} // interne Breite im Device-Format
+      height={(height + padding * 2) * dpr} // interne Hoehe im Device-Format
       className="pointer-events-none absolute transition-opacity duration-[400ms]" // Stylingklassen
-      style={{ top: offsetY - padding, left: offsetX - padding }} // Positionierung ueber Props
+      style={{
+        top: offsetY - padding,
+        left: offsetX - padding,
+        width: width + padding * 2, // CSS-Breite
+        height: height + padding * 2, // CSS-Hoehe
+      }} // Positionierung ueber Props
     />
   );
 };
@@ -143,6 +154,7 @@ export const ParticleIntro: React.FC<ParticleIntroProps> = ({
   const [offsets, setOffsets] = useState<Offsets | null>(null); // berechnete Offsets
   const [phase, setPhase] = useState<'preparing' | 'animating' | 'fading'>('preparing'); // aktueller Ablaufstatus
   const headlineRef = useRef<HTMLHeadingElement | null>(null); // Referenz auf das H1 Element
+  const dpr = getPixelRatio(); // Aktuelle Device Pixel Ratio
 
   useLayoutEffect(() => { // Nach Layout wird die Groesse gemessen
     if (headlineRef.current && phase === 'preparing') {
@@ -213,12 +225,15 @@ export const ParticleIntro: React.FC<ParticleIntroProps> = ({
             top: offsets.offsetY - padding, // Position Y
             left: offsets.offsetX - padding, // Position X
             transitionDuration: `${fadeDuration}ms`, // Dauer des Fades
+            width: rect.width + padding * 2, // CSS-Breite
+            height: rect.height + padding * 2, // CSS-Hoehe
           }}
-          width={rect.width + padding * 2} // Breite inklusive Padding
-          height={rect.height + padding * 2} // Hoehe inklusive Padding
+          width={(rect.width + padding * 2) * dpr} // interne Breite mit DPR
+          height={(rect.height + padding * 2) * dpr} // interne Hoehe mit DPR
           ref={(node) => {
             if (node) { // Wenn Canvas bereit ist
               const ctx = node.getContext('2d')!; // Kontext holen
+              ctx.scale(dpr, dpr); // Kontext skalieren
               ctx.clearRect(0, 0, node.width, node.height); // Canvas leeren
               ctx.font = font; // Schrift setzen
               const metrics = ctx.measureText(text); // Textmetrik bestimmen

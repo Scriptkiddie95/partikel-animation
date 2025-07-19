@@ -43,8 +43,7 @@ export interface Offsets {
 
 // Calculate offsets between DOM box and glyph box
 export function computeOffsets(rect: DOMRect, measurement: TextMeasurement): Offsets {
-  const dpr = window.devicePixelRatio || 1; // Display-Scaling abfragen
-  const glyphWidth = measurement.widthWithSpacing / dpr; // Breite in CSS-Pixel umrechnen
+  const glyphWidth = measurement.widthWithSpacing; // Breite in CSS-Pixel
   const glyphHeight =
     measurement.metrics.actualBoundingBoxAscent +
     measurement.metrics.actualBoundingBoxDescent; // Hoehe aus Metriken

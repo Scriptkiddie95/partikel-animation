@@ -1,169 +1,136 @@
-import { useEffect, useRef, useState } from 'react'
-import useMeasure from 'react-use-measure'
-
-interface Particle {
-  startX: number
-  startY: number
-  targetX: number
-  targetY: number
-}
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { createParticle, drawParticle, updateParticle, type Particle } from './effects/HeroTextParticle'
 
 interface HeroTitleEffectProps {
-  text: string
-  fontSize?: number
-  color?: string
+    text: string
+    particleColor?: string
+    particleCount?: number
+    delay?: number
 }
 
-const HeroTitleEffect: React.FC<HeroTitleEffectProps> = ({
-  text,
-  fontSize = 128,
-  color = '#0ff',
-}) => {
-  const canvasRef = useRef<HTMLCanvasElement>(null)
-  const [containerRef, bounds] = useMeasure()
-  const [showText, setShowText] = useState(false)
+export default function HeroTitleEffect({ 
+    text, 
+    particleColor = '#ffffff', 
+    particleCount = 300,
+    delay = 500 
+}: HeroTitleEffectProps) {
+    const canvasRef = useRef<HTMLCanvasElement>(null)
+    const textRef = useRef<HTMLDivElement>(null)
+    const particlesRef = useRef<Particle[]>([])
+    const [animationDone, setAnimationDone] = useState(false)
+    const [dimensions, setDimensions] = useState({ width: 0, height: 0 })
+    
+    // Setup der Canvas und Partikel
+    const setup = useCallback(() => {
+        const canvas = canvasRef.current
+        const textElement = textRef.current
+        if (!canvas || !textElement) return
 
-  useEffect(() => {
-    let frame = 0
-    let cancelled = false
-    setShowText(false)
+        const rect = textElement.getBoundingClientRect()
+        const width = Math.ceil(rect.width)
+        const height = Math.ceil(rect.height)
+        
+        canvas.width = width
+        canvas.height = height
+        setDimensions({ width, height })
 
-    const run = async () => {
-      await document.fonts?.ready
-      if (cancelled) return
-
-      const canvas = canvasRef.current
-      if (!canvas || !bounds.width || !bounds.height) return
-      const ctx = canvas.getContext('2d')
-      if (!ctx) return
-
-      const dpr = window.devicePixelRatio || 1
-      const width = bounds.width
-      const height = bounds.height
-      canvas.width = Math.round(width * dpr)
-      canvas.height = Math.round(height * dpr)
-      canvas.style.width = `${width}px`
-      canvas.style.height = `${height}px`
-      ctx.scale(dpr, dpr)
-
-      ctx.font = `${fontSize}px Orbitron, sans-serif`
-      ctx.textAlign = 'left'
-      ctx.textBaseline = 'middle'
-
-      const totalWidth = ctx.measureText(text).width
-      let xCursor = (width - totalWidth) / 2
-
-      const offCanvas = document.createElement('canvas')
-      offCanvas.width = Math.round(width * dpr)
-      offCanvas.height = Math.round(height * dpr)
-      const offCtx = offCanvas.getContext('2d')
-      if (!offCtx) return
-      offCtx.scale(dpr, dpr)
-      offCtx.font = `${fontSize}px Orbitron, sans-serif`
-      offCtx.textAlign = 'left'
-      offCtx.textBaseline = 'middle'
-      offCtx.fillStyle = color
-
-      const step = Math.max(1, Math.round(dpr))
-
-      const letters: Particle[][] = []
-
-      for (const letter of text) {
-        const widthLetter = ctx.measureText(letter).width
-        offCtx.clearRect(0, 0, width, height)
-        offCtx.fillText(letter, xCursor, height / 2)
-        const data = offCtx.getImageData(0, 0, offCanvas.width, offCanvas.height).data
+        // Erstelle Partikel für jeden Buchstaben
+        const letters = text.split('')
+        const particlesPerLetter = Math.floor(particleCount / letters.length)
         const particles: Particle[] = []
-        for (let y = 0; y < offCanvas.height; y += step) {
-          for (let x = 0; x < offCanvas.width; x += step) {
-            const idx = (y * offCanvas.width + x) * 4
-            if (data[idx + 3] > 128) {
-              const targetX = x / dpr
-              const targetY = y / dpr
-              const startX = -100 + Math.random() * 50
-              const startY = targetY
-              particles.push({ startX, startY, targetX, targetY })
+
+        letters.forEach((letter, letterIndex) => {
+            const letterWidth = width / letters.length
+            const letterX = letterWidth * letterIndex + letterWidth / 2
+            
+            for (let i = 0; i < particlesPerLetter; i++) {
+                const startX = -100 + Math.random() * 50
+                const startY = Math.random() * height
+                const targetX = letterX + (Math.random() - 0.5) * letterWidth * 0.8
+                const targetY = height / 2 + (Math.random() - 0.5) * height * 0.5
+                
+                particles.push(
+                    createParticle(
+                        startX,
+                        startY,
+                        targetX,
+                        targetY,
+                        1 + Math.random(),
+                        particleColor,
+                        letterIndex
+                    )
+                )
             }
-          }
+        })
+
+        particlesRef.current = particles
+    }, [text, particleCount, particleColor])
+
+    // Animation Loop
+    const animate = useCallback(() => {
+        const canvas = canvasRef.current
+        const ctx = canvas?.getContext('2d')
+        if (!canvas || !ctx) return
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height)
+
+        let isAnimating = false
+        const currentLetterIndex = Math.floor(
+            particlesRef.current.reduce((max, p) => Math.max(max, p.progress * p.letterIndex), 0)
+        )
+
+        particlesRef.current.forEach(particle => {
+            if (particle.letterIndex <= currentLetterIndex) {
+                const active = updateParticle(particle, 0.02)
+                if (active) isAnimating = true
+                drawParticle(ctx, particle)
+            }
+        })
+
+        if (!isAnimating && !animationDone) {
+            setAnimationDone(true)
+        } else if (!animationDone) {
+            requestAnimationFrame(animate)
         }
-        letters.push(particles)
-        xCursor += widthLetter
-      }
+    }, [animationDone])
 
-      let current = 0
-      let startTime = performance.now()
-      const duration = 1000
+    // Initialisierung
+    useEffect(() => {
+        setup()
+        const timeoutId = setTimeout(() => {
+            requestAnimationFrame(animate)
+        }, delay)
 
-      const ease = (t: number) => 1 - Math.cos(t * Math.PI) / 2
+        return () => clearTimeout(timeoutId)
+    }, [setup, animate, delay])
 
-      const animate = (time: number) => {
-        if (cancelled) return
-        const t = Math.min(1, (time - startTime) / duration)
-        const particles = letters[current]
-        ctx.clearRect(0, 0, width, height)
-        for (const p of particles) {
-          const x = p.startX + (p.targetX - p.startX) * ease(t)
-          const y = p.startY + (p.targetY - p.startY) * ease(t)
-          ctx.beginPath()
-          ctx.arc(x, y, 1.5, 0, Math.PI * 2)
-          ctx.fillStyle = color
-          ctx.fill()
-        }
-
-        if (t < 1) {
-          frame = requestAnimationFrame(animate)
-        } else {
-          current += 1
-          if (current < letters.length) {
-            startTime = time
-            frame = requestAnimationFrame(animate)
-          } else {
-            setShowText(true)
-          }
-        }
-      }
-
-      frame = requestAnimationFrame(animate)
-    }
-
-    run()
-
-    return () => {
-      cancelled = true
-      cancelAnimationFrame(frame)
-    }
-  }, [text, fontSize, color, bounds.width, bounds.height])
-
-  return (
-    <div
-      ref={containerRef}
-      style={{ position: 'relative', width: '100%', height: '100%' }}
-    >
-      {!showText && (
-        <canvas
-          ref={canvasRef}
-          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}
-        />
-      )}
-      <span
-        style={{
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          fontSize: `${fontSize}px`,
-          fontFamily: 'Orbitron, sans-serif',
-          color,
-          whiteSpace: 'nowrap',
-          opacity: showText ? 1 : 0,
-          transition: 'opacity 0.4s ease',
-          userSelect: 'text',
-        }}
-      >
-        {text}
-      </span>
-    </div>
-  )
+    return (
+        <div style={{ position: 'relative' }}>
+            <div 
+                ref={textRef}
+                style={{ 
+                    opacity: animationDone ? 1 : 0,
+                    transition: 'opacity 0.5s ease-in-out',
+                    position: 'relative',
+                    fontSize: 'inherit',
+                    fontWeight: 'inherit'
+                }}
+            >
+                {text}
+            </div>
+            <canvas
+                ref={canvasRef}
+                style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: dimensions.width,
+                    height: dimensions.height,
+                    pointerEvents: 'none',
+                    opacity: animationDone ? 0 : 1,
+                    transition: 'opacity 0.5s ease-in-out'
+                }}
+            />
+        </div>
+    )
 }
-
-export default HeroTitleEffect

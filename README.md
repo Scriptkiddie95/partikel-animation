@@ -39,3 +39,5 @@ System Hero Particles zeigt, wie Text per Partikel sichtbar gemacht und anschlie
 - 2025-07-21: Messfunktionen hinzugefuegt und Offsets zur absoluten Positionierung verwendet.
 - 2025-07-22: App.tsx Wrapper fuer ParticleIntro mit fester Hoehe hinzugefuegt.
 - 2025-07-23: Letter-Spacing korrekt vermessen und Offsets auf Zoom vorbereitet.
+- 2025-07-24: Canvas-Dimensionen mit devicePixelRatio skaliert und DPR-Ausgabe in
+  ParticleIntro integriert.

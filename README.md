@@ -43,3 +43,4 @@ System Hero Particles zeigt, wie Text per Partikel sichtbar gemacht und anschlie
   ParticleIntro integriert.
 - 2025-07-25: ToDo-Liste erstellt, um Aufgaben zur perfekten Ueberlagerung von H1 und Canvas zu sammeln.
 - 2025-07-26: Dokumentationspfad fuer goal.md korrigiert und fehlende Datei docs/codex/goal.md angelegt.
+- 2025-07-27: DPR-Korrektur entfernt, glyphWidth wird nun direkt verwendet.

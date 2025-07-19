@@ -155,9 +155,19 @@ export const ParticleIntro: React.FC<ParticleIntroProps> = ({
   const [phase, setPhase] = useState<'preparing' | 'animating' | 'fading'>('preparing'); // aktueller Ablaufstatus
   const headlineRef = useRef<HTMLHeadingElement | null>(null); // Referenz auf das H1 Element
   const dpr = getPixelRatio(); // Aktuelle Device Pixel Ratio
+  const [fontsReady, setFontsReady] = useState(false); // Schriftlade-Status
+
+  // Warten bis die benutzten Webfonts geladen sind
+  useEffect(() => {
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(() => setFontsReady(true));
+    } else {
+      setFontsReady(true); // Fallback fuer Browser ohne Font Loading API
+    }
+  }, []);
 
   useLayoutEffect(() => { // Nach Layout wird die Groesse gemessen
-    if (headlineRef.current && phase === 'preparing') {
+    if (headlineRef.current && phase === 'preparing' && fontsReady) {
       const r = measureElementRect(headlineRef.current); // DOM-Box abfragen
       const spacing = getLetterSpacing(headlineRef.current); // Letter-Spacing lesen
       const metrics = measureTextMetrics(font, text, spacing); // Glyphenbox messen
@@ -166,7 +176,7 @@ export const ParticleIntro: React.FC<ParticleIntroProps> = ({
       setOffsets(offs);
       saveOffsets('particleOffsets', offs); // optional speichern
     }
-  }, [phase, font, text]);
+  }, [phase, font, text, fontsReady]);
 
   useEffect(() => {
     const saved = loadOffsets('particleOffsets'); // gespeicherte Werte abrufen

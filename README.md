@@ -45,4 +45,7 @@ System Hero Particles zeigt, wie Text per Partikel sichtbar gemacht und anschlie
 - 2025-07-26: Dokumentationspfad fuer goal.md korrigiert und fehlende Datei docs/codex/goal.md angelegt.
 - 2025-07-27: DPR-Korrektur entfernt, glyphWidth wird nun direkt verwendet.
 - 2025-07-27: Resize-Listener in ParticleIntro hinzugefuegt, um Offsets bei Fenster- und DPR-Aenderungen neu zu berechnen.
+- 2025-07-27: Fonts werden nun via document.fonts.ready abgewartet, bevor ParticleIntro die Messung startet.
+- 2025-07-28: document.fonts.ready mit Fallback eingebaut, Messung startet erst nach Schriftladen.
+- 
 

@@ -29,3 +29,4 @@ System Hero Particles zeigt, wie Text per Partikel sichtbar gemacht und anschlie
 
 - 2025-07-19: README neu erstellt, Installations- und Startbefehle beschrieben sowie Setup-Skripte erwähnt.
 - 2025-07-19: Tailwind-Konfiguration hinzugefuegt und main.tsx eingerichtet.
+- 2025-07-20: ParticleIntro-Komponente erstellt und App.tsx angepasst.
